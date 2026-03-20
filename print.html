@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Print</title>
+<style>
+/* ── PRINT EXPORT ENGINE ──
+   Opened by Prose/Inkwell with content passed via localStorage key 'inkwell_print_job'
+   Five literary themes, proper book typography, chapter breaks.
+*/
+
+/* Base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 12pt; }
+
+/* Theme variables */
+body.theme-classic {
+  --body-font: 'Georgia', 'Times New Roman', serif;
+  --head-font: 'Georgia', 'Times New Roman', serif;
+  --body-size: 11.5pt;
+  --head-size: 16pt;
+  --ch-size: 22pt;
+  --lh: 1.8;
+  --margin-outer: 1.4in;
+  --margin-inner: 1.1in;
+  --margin-top: 1.2in;
+  --margin-bottom: 1.1in;
+  --color: #1a1a1a;
+  --color2: #555;
+  --indent: 1.5em;
+}
+body.theme-literary {
+  --body-font: 'Palatino Linotype', 'Palatino', 'Book Antiqua', Georgia, serif;
+  --head-font: 'Palatino Linotype', 'Palatino', Georgia, serif;
+  --body-size: 11pt;
+  --head-size: 15pt;
+  --ch-size: 20pt;
+  --lh: 1.75;
+  --margin-outer: 1.5in;
+  --margin-inner: 1.2in;
+  --margin-top: 1.3in;
+  --margin-bottom: 1.3in;
+  --color: #111;
+  --color2: #444;
+  --indent: 2em;
+}
+body.theme-modern {
+  --body-font: 'Helvetica Neue', Arial, sans-serif;
+  --head-font: 'Helvetica Neue', Arial, sans-serif;
+  --body-size: 10.5pt;
+  --head-size: 14pt;
+  --ch-size: 20pt;
+  --lh: 1.65;
+  --margin-outer: 1.2in;
+  --margin-inner: 1in;
+  --margin-top: 1.1in;
+  --margin-bottom: 1in;
+  --color: #1e1e1e;
+  --color2: #666;
+  --indent: 0;
+}
+body.theme-manuscript {
+  --body-font: 'Courier New', Courier, monospace;
+  --head-font: 'Courier New', Courier, monospace;
+  --body-size: 12pt;
+  --head-size: 12pt;
+  --ch-size: 12pt;
+  --lh: 2;
+  --margin-outer: 1in;
+  --margin-inner: 1in;
+  --margin-top: 1in;
+  --margin-bottom: 1in;
+  --color: #000;
+  --color2: #333;
+  --indent: 0.5in;
+}
+body.theme-minimal {
+  --body-font: 'iA Writer Quattro', 'Courier Prime', 'Courier New', Georgia, serif;
+  --head-font: 'iA Writer Quattro', 'Courier Prime', Georgia, serif;
+  --body-size: 11pt;
+  --head-size: 13pt;
+  --ch-size: 18pt;
+  --lh: 1.7;
+  --margin-outer: 1.6in;
+  --margin-inner: 1.3in;
+  --margin-top: 1.4in;
+  --margin-bottom: 1.3in;
+  --color: #1a1a1a;
+  --color2: #666;
+  --indent: 0;
+}
+
+/* Screen preview */
+@media screen {
+  body {
+    background: #e8e6e1;
+    padding: 48px 20px 80px;
+    min-height: 100vh;
+  }
+  .page {
+    background: #fff;
+    width: 8.5in;
+    min-height: 11in;
+    margin: 0 auto 32px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.2);
+    padding: var(--margin-top) var(--margin-outer) var(--margin-bottom) var(--margin-inner);
+  }
+  #toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #2d2d2d;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    color: #ccc;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+  }
+  #toolbar select, #toolbar input {
+    background: #3d3d3d;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #eee;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .print-btn {
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .print-btn:hover { background: #6d28d9; }
+  .close-btn {
+    background: none;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 5px 12px;
+    color: #ccc;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .close-btn:hover { background: #3d3d3d; }
+  #toolbar-label { color: #999; font-size: 11px; }
+}
+
+/* Print */
+@media print {
+  body { background: white; }
+  #toolbar { display: none !important; }
+  .page {
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+  }
+  .chapter-break { page-break-before: always; }
+  .chapter-break:first-child { page-break-before: avoid; }
+}
+
+/* Typography */
+body {
+  font-family: var(--body-font);
+  font-size: var(--body-size);
+  line-height: var(--lh);
+  color: var(--color);
+}
+@media print {
+  @page {
+    size: 6in 9in;
+    margin: var(--margin-top) var(--margin-outer) var(--margin-bottom) var(--margin-inner);
+  }
+}
+
+/* Book title page */
+.title-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 8in;
+  padding: 1in 0;
+}
+.book-title {
+  font-family: var(--head-font);
+  font-size: 28pt;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color);
+  margin-bottom: 0.3in;
+  line-height: 1.2;
+}
+.book-author {
+  font-family: var(--head-font);
+  font-size: 13pt;
+  color: var(--color2);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.book-rule {
+  width: 1.5in;
+  height: 1px;
+  background: var(--color2);
+  margin: 0.25in auto;
+  opacity: 0.4;
+}
+.book-genre {
+  font-size: 10pt;
+  color: var(--color2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.1in;
+}
+
+/* Chapter */
+.chapter-break {
+  padding-top: 0.8in;
+}
+.chapter-number {
+  font-family: var(--head-font);
+  font-size: 10pt;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color2);
+  text-align: center;
+  margin-bottom: 0.15in;
+}
+.chapter-title {
+  font-family: var(--head-font);
+  font-size: var(--ch-size);
+  font-weight: 400;
+  text-align: center;
+  color: var(--color);
+  margin-bottom: 0.5in;
+  line-height: 1.3;
+}
+body.theme-manuscript .chapter-title {
+  text-align: left;
+  font-size: var(--ch-size);
+  text-transform: uppercase;
+}
+
+/* Scene divider */
+.scene-break {
+  text-align: center;
+  color: var(--color2);
+  margin: 1.5em 0;
+  font-size: 14pt;
+  letter-spacing: 0.3em;
+}
+body.theme-manuscript .scene-break::after { content: '###'; font-size: 12pt; letter-spacing: 0; }
+body:not(.theme-manuscript) .scene-break::after { content: '✦'; }
+
+/* Prose body */
+.prose-body p {
+  font-family: var(--body-font);
+  font-size: var(--body-size);
+  line-height: var(--lh);
+  color: var(--color);
+  margin-bottom: 0;
+  text-align: justify;
+  hyphens: auto;
+}
+/* First paragraph after chapter/scene: no indent */
+.prose-body p:first-child,
+.scene-break + p {
+  text-indent: 0;
+}
+/* Subsequent paragraphs: indent, no gap */
+.prose-body p + p {
+  text-indent: var(--indent);
+}
+body.theme-modern .prose-body p,
+body.theme-minimal .prose-body p {
+  text-indent: 0;
+  margin-bottom: 0.7em;
+}
+
+/* Inline markdown rendered */
+.prose-body strong { font-weight: 700; }
+.prose-body em { font-style: italic; }
+.prose-body blockquote {
+  margin: 1em 1.5em;
+  padding-left: 1em;
+  border-left: 2px solid var(--color2);
+  color: var(--color2);
+  font-style: italic;
+}
+.prose-body code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  background: rgba(0,0,0,.05);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+.prose-body h1, .prose-body h2, .prose-body h3 {
+  font-family: var(--head-font);
+  font-weight: 600;
+  margin: 1.5em 0 0.5em;
+}
+.prose-body h1 { font-size: var(--head-size); }
+.prose-body h2 { font-size: calc(var(--head-size) - 2pt); }
+.prose-body h3 { font-size: calc(var(--head-size) - 4pt); }
+.prose-body hr {
+  border: none;
+  text-align: center;
+  margin: 1.5em 0;
+}
+
+/* Running headers (print only) */
+@media print {
+  .page-recto { counter-increment: page; }
+  /* Page numbers via CSS @page if needed */
+}
+
+/* Manuscript format special */
+body.theme-manuscript .prose-body {
+  white-space: pre-wrap;
+}
+body.theme-manuscript .title-page {
+  text-align: left;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+}
+body.theme-manuscript .book-title {
+  font-size: 14pt;
+  margin-bottom: 0.1in;
+}
+</style>
+</head>
+<body class="theme-classic" id="printbody">
+
+<div id="toolbar">
+  <span id="toolbar-label">Theme</span>
+  <select id="theme-sel" onchange="setTheme(this.value)">
+    <option value="classic">Classic</option>
+    <option value="literary">Literary</option>
+    <option value="modern">Modern</option>
+    <option value="minimal">Minimal</option>
+    <option value="manuscript">Manuscript format</option>
+  </select>
+  <span id="toolbar-label" style="margin-left:12px">Export</span>
+  <select id="export-sel" onchange="rebuildContent()">
+    <option value="all">Full manuscript</option>
+  </select>
+  <button class="close-btn" onclick="window.close()">✕ Close</button>
+  <button class="print-btn" onclick="window.print()">⬇ Print / Save PDF</button>
+</div>
+
+<div id="book-pages"></div>
+
+<script>
+'use strict';
+
+let JOB = null;
+
+function init() {
+  try {
+    JOB = JSON.parse(localStorage.getItem('inkwell_print_job') || 'null');
+    if (!JOB) { document.getElementById('book-pages').innerHTML = '<div style="padding:2in;font-family:Georgia;text-align:center;color:#666">No content to print.<br><br>Open Prose or Inkwell and use Export → Print / PDF.</div>'; return; }
+  } catch(e) { return; }
+
+  buildChapterSelect();
+  rebuildContent();
+}
+
+function buildChapterSelect() {
+  const sel = document.getElementById('export-sel');
+  sel.innerHTML = '<option value="all">Full manuscript</option>';
+  if (JOB.chapters && JOB.chapters.length > 1) {
+    JOB.chapters.forEach((ch, i) => {
+      const opt = document.createElement('option');
+      opt.value = 'ch_' + i;
+      opt.textContent = ch.title || ('Chapter ' + (i+1));
+      sel.appendChild(opt);
+    });
+  }
+  // Also add title-page option
+  const tpOpt = document.createElement('option');
+  tpOpt.value = 'notitle';
+  tpOpt.textContent = 'Full manuscript (no title page)';
+  sel.appendChild(tpOpt);
+}
+
+function setTheme(t) {
+  document.getElementById('printbody').className = 'theme-' + t;
+}
+
+function rebuildContent() {
+  const mode = document.getElementById('export-sel').value;
+  const el = document.getElementById('book-pages');
+
+  if (!JOB) return;
+
+  let html = '';
+
+  // Title page (full manuscript only)
+  if (mode === 'all') {
+    html += `<div class="page title-page">
+      <div class="book-title">${esc(JOB.title || 'Untitled')}</div>
+      <div class="book-rule"></div>
+      ${JOB.author ? `<div class="book-author">${esc(JOB.author)}</div>` : ''}
+      ${JOB.genre ? `<div class="book-genre">${esc(JOB.genre)}</div>` : ''}
+    </div>`;
+  }
+
+  // Chapters
+  const chapters = JOB.chapters || [];
+  let chaptersToRender = chapters;
+  if (mode.startsWith('ch_')) {
+    const idx = parseInt(mode.replace('ch_', ''));
+    chaptersToRender = [chapters[idx]].filter(Boolean);
+  }
+
+  chaptersToRender.forEach((ch, ci) => {
+    const isFirst = ci === 0;
+    html += `<div class="page ${isFirst && mode !== 'all' ? '' : 'chapter-break'}">
+      ${ch.number !== false ? `<div class="chapter-number">${ch.chapterLabel || ('Chapter ' + (ci + 1))}</div>` : ''}
+      ${ch.title && ch.title !== ch.chapterLabel ? `<div class="chapter-title">${esc(ch.title)}</div>` : (mode === 'all' || chaptersToRender.length > 1 ? `<div class="chapter-title" style="min-height:0.3in"></div>` : '')}
+      <div class="prose-body">${renderMarkdown(ch.content || '')}</div>
+    </div>`;
+  });
+
+  el.innerHTML = html || '<div style="padding:2in;font-family:Georgia;text-align:center;color:#666">Nothing to display.</div>';
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderMarkdown(md) {
+  // Convert markdown to semantic HTML for print
+  const lines = md.split('\n');
+  let out = [], inCode = false, prevBlank = true;
+
+  lines.forEach(line => {
+    if (line.startsWith('```')) { inCode = !inCode; return; }
+    if (inCode) { out.push(`<p style="font-family:'Courier New',monospace;font-size:0.85em">${esc(line)}</p>`); return; }
+    if (line.trim() === '' || line.trim() === '---') {
+      if (line.trim() === '---') out.push('<div class="scene-break"></div>');
+      else out.push('__BLANK__');
+      prevBlank = true;
+      return;
+    }
+    if (line.startsWith('# '))  { out.push(`<h1>${inl(esc(line.slice(2)))}</h1>`); prevBlank = true; return; }
+    if (line.startsWith('## ')) { out.push(`<h2>${inl(esc(line.slice(3)))}</h2>`); prevBlank = true; return; }
+    if (line.startsWith('### ')){ out.push(`<h3>${inl(esc(line.slice(4)))}</h3>`); prevBlank = true; return; }
+    if (line.startsWith('> '))  { out.push(`<blockquote>${inl(esc(line.slice(2)))}</blockquote>`); prevBlank = false; return; }
+    out.push(`<p>${inl(esc(line))}</p>`);
+    prevBlank = false;
+  });
+
+  // Remove leading/trailing blanks, collapse multiple blanks
+  const cleaned = [];
+  let blankRun = 0;
+  out.forEach(l => {
+    if (l === '__BLANK__') { blankRun++; if (blankRun === 1) cleaned.push(''); }
+    else { blankRun = 0; cleaned.push(l); }
+  });
+  return cleaned.filter(l => l !== '').join('\n');
+}
+
+function inl(s) {
+  s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+  s = s.replace(/_([^_\n]+?)_/g, '<em>$1</em>');
+  s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return s;
+}
+
+// Handle theme from URL param
+const params = new URLSearchParams(location.search);
+if (params.get('theme')) {
+  document.getElementById('printbody').className = 'theme-' + params.get('theme');
+  document.getElementById('theme-sel').value = params.get('theme');
+}
+
+init();
+</script>
+</body>
+</html>

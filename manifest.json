@@ -1,0 +1,26 @@
+{
+  "name": "thorn",
+  "short_name": "thorn",
+  "description": "Minimalist writing environment with GitHub sync and AI review",
+  "start_url": "/thorn.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/logo-icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "New Document",
+      "short_name": "New",
+      "url": "/thorn.html?new=1"
+    }
+  ]
+}
