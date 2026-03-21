@@ -6,14 +6,13 @@
   No install. No account. No cloud.
   <br/><br/>
   <a href="https://thorn.ink">thorn.ink</a> &nbsp;·&nbsp;
-  <a href="https://thorn.ink/guide.html">Guide</a> &nbsp;·&nbsp;
-  <a href="https://x.com/christianegli">@christianegli</a> &nbsp;·&nbsp;
+  <a href="https://thorn.ink/guide.html">Manual</a> &nbsp;·&nbsp;
+  created by <a href="https://x.com/christianegli">@christianegli</a> &nbsp;·&nbsp;
   CC BY-NC 4.0
 </div>
 
 <br/>
 
-![thorn editor](screenshots/editor.png)
 
 ---
 
@@ -98,12 +97,6 @@ Five literary print styles. Offline, no server.
 | `⌘O` | Open local `.md` file |
 
 Full reference: [thorn.ink/guide.html](https://thorn.ink/guide.html)
-
----
-
-## Dark mode
-
-![Dark theme](screenshots/dark.png)
 
 ---
 
