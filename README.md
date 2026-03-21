@@ -7,6 +7,7 @@
   <br/><br/>
   <a href="https://thorn.ink">thorn.ink</a> &nbsp;·&nbsp;
   <a href="https://thorn.ink#download">Download</a> &nbsp;·&nbsp;
+  <a href="https://x.com/christianegli">@christianegli</a> &nbsp;·&nbsp;
   MIT License
 </div>
 
