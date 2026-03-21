@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide — thorn</title>
+  <meta name="description" content="Everything about thorn: the editor, themes, focus mode, GitHub sync, AI annotations, and keyboard shortcuts.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f1e9;
+      --warm: #f0e9de;
+      --surface: #ede5d8;
+      --border: #d9cfc1;
+      --text: #1c1810;
+      --muted: #7a6f61;
+      --faint: #c8bfa9;
+      --accent: #5a3fd6;
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: -apple-system, "SF Pro Text", system-ui, sans-serif;
+      --nav-w: 224px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    /* TOP BAR */
+    .topbar { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 52px; background: rgba(246,241,233,.93); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); font-size: 15px; font-weight: 600; }
+    .topbar-logo img { height: 24px; width: auto; mix-blend-mode: multiply; }
+    .topbar-badge { font-size: 11px; color: var(--faint); background: var(--surface); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+    .topbar-links { display: flex; align-items: center; gap: 20px; }
+    .topbar-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .topbar-link:hover { color: var(--text); }
+    .topbar-cta { background: var(--text); color: var(--bg); font-size: 13px; font-weight: 600; text-decoration: none; padding: 7px 16px; border-radius: 6px; }
+    .topbar-cta:hover { opacity: .82; }
+
+    /* LAYOUT */
+    .layout { display: flex; min-height: calc(100vh - 52px); }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--nav-w); flex-shrink: 0; position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto; padding: 32px 0; border-right: 1px solid var(--border); background: var(--warm); }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 2px; }
+    .sidebar-group { margin-bottom: 28px; }
+    .sidebar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--faint); padding: 0 24px; margin-bottom: 8px; display: block; }
+    .sidebar-link { display: block; font-size: 13.5px; color: var(--muted); text-decoration: none; padding: 6px 24px; border-left: 2px solid transparent; transition: all .12s; }
+    .sidebar-link:hover { color: var(--text); background: var(--surface); }
+    .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface); font-weight: 600; }
+
+    /* CONTENT */
+    .content { flex: 1; min-width: 0; padding: 60px 72px 120px; max-width: 760px; }
+
+    /* TYPOGRAPHY */
+    .guide-hero { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+    .guide-hero h1 { font-family: var(--serif); font-size: 44px; font-weight: 700; line-height: 1.1; color: var(--text); margin-bottom: 14px; }
+    .guide-hero p { font-size: 17px; color: var(--muted); line-height: 1.65; max-width: 500px; }
+
+    .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+    .section h2 { font-family: var(--serif); font-size: 30px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .section-meta { font-size: 13px; color: var(--faint); margin-bottom: 28px; }
+    .section p { font-size: 15.5px; color: var(--muted); line-height: 1.75; margin-bottom: 18px; }
+    .section p:last-child { margin-bottom: 0; }
+    .section h3 { font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--text); margin-top: 36px; margin-bottom: 12px; }
+    .section ul, .section ol { padding-left: 20px; margin-bottom: 18px; }
+    .section li { font-size: 15.5px; color: var(--muted); line-height: 1.7; margin-bottom: 6px; }
+    .section strong { color: var(--text); font-weight: 600; }
+
+    /* CALLOUT */
+    .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 24px 0; }
+    .callout-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-bottom: 8px; }
+    .callout p { font-size: 14.5px; color: var(--muted); margin-bottom: 0 !important; line-height: 1.65; }
+
+    /* KEYBOARD SHORTCUTS */
+    .shortcut-table { width: 100%; border-collapse: collapse; margin: 20px 0 28px; }
+    .shortcut-table th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--faint); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .shortcut-table td { font-size: 14px; color: var(--muted); padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .shortcut-table td:first-child { color: var(--text); }
+    .shortcut-table tr:last-child td { border-bottom: none; }
+    kbd { display: inline-flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 2px 7px; font-size: 12px; font-family: var(--sans); color: var(--text); white-space: nowrap; margin: 0 2px; }
+
+    /* SCREENSHOT */
+    .fig { margin: 28px 0; }
+    .fig img { width: 100%; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(28,24,16,.1); display: block; }
+    .fig figcaption { font-size: 12.5px; color: var(--faint); margin-top: 10px; text-align: center; }
+
+    /* THEME GRID */
+    .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+    .theme-swatch { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .theme-swatch-body { height: 52px; }
+    .theme-swatch-label { font-size: 11px; font-weight: 600; padding: 7px 10px; border-top: 1px solid rgba(0,0,0,.08); }
+
+    /* MOBILE SELECT */
+    .mobile-nav { display: none; }
+    .mobile-nav select { width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font-family: var(--sans); }
+
+    @media (max-width: 720px) {
+      .sidebar { display: none; }
+      .content { padding: 32px 20px 80px; }
+      .guide-hero h1 { font-size: 30px; }
+      .mobile-nav { display: block; margin: 16px 20px; }
+      .theme-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="/">
+    <img src="media/logo-wordmark.jpg" alt="thorn">
+    <span class="topbar-badge">Guide</span>
+  </a>
+  <div class="topbar-links">
+    <a class="topbar-link" href="https://github.com/christianegli/thorn" target="_blank">GitHub</a>
+    <a class="topbar-cta" href="thorn.html">Start Writing →</a>
+  </div>
+</div>
+
+<div class="mobile-nav">
+  <select onchange="location.hash=this.value">
+    <option value="">Jump to section…</option>
+    <option value="#start">Getting Started</option>
+    <option value="#editor">The Editor</option>
+    <option value="#themes">Themes</option>
+    <option value="#focus">Focus Mode</option>
+    <option value="#files">File Browser</option>
+    <option value="#annotations">AI Annotations</option>
+    <option value="#github">GitHub Sync</option>
+    <option value="#palette">Command Palette</option>
+    <option value="#shortcuts">Keyboard Shortcuts</option>
+    <option value="#settings">Settings</option>
+  </select>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" aria-label="Guide navigation">
+    <div class="sidebar-group">
+      <span class="sidebar-label">Start</span>
+      <a class="sidebar-link" href="#start">Getting Started</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Writing</span>
+      <a class="sidebar-link" href="#editor">The Editor</a>
+      <a class="sidebar-link" href="#focus">Focus Mode</a>
+      <a class="sidebar-link" href="#files">File Browser</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Features</span>
+      <a class="sidebar-link" href="#themes">Themes</a>
+      <a class="sidebar-link" href="#annotations">AI Annotations</a>
+      <a class="sidebar-link" href="#github">GitHub Sync</a>
+      <a class="sidebar-link" href="#palette">Command Palette</a>
+    </div>
+    <div class="sidebar-group">
+      <span class="sidebar-label">Reference</span>
+      <a class="sidebar-link" href="#shortcuts">Keyboard Shortcuts</a>
+      <a class="sidebar-link" href="#settings">Settings</a>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="guide-hero">
+      <h1>thorn Guide</h1>
+      <p>Everything you need to know about the editor, themes, focus mode, GitHub sync, AI annotations, and more.</p>
+    </div>
+
+    <!-- GETTING STARTED -->
+    <section class="section" id="start">
+      <h2>Getting Started</h2>
+      <div class="section-meta">No install required.</div>
+      <p>thorn runs entirely in your browser. Open <a href="thorn.html" style="color:var(--accent);text-decoration:none;font-weight:600;">thorn.html</a> and you're writing. There's no account, no cloud sign-in, no download.</p>
+      <p>Your documents are stored in your browser's local storage. They persist across sessions on the same device. You can optionally sync them to a GitHub repository — nothing leaves your browser unless you explicitly set that up.</p>
+
+      <h3>First steps</h3>
+      <ol>
+        <li>Open the app. A blank document is waiting.</li>
+        <li>Start typing. Markdown renders as you go.</li>
+        <li>Use <kbd>⌘</kbd><kbd>K</kbd> to open the command palette — it's the fastest way to do anything.</li>
+        <li>Pick a theme that suits your light conditions.</li>
+        <li>Come back tomorrow. Your document will be there.</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-label">Privacy</div>
+        <p>thorn stores documents in <code>localStorage</code> — on your device, in your browser. Nothing is sent to any server. GitHub sync is optional and uses your own repository and credentials.</p>
+      </div>
+    </section>
+
+    <!-- THE EDITOR -->
+    <section class="section" id="editor">
+      <h2>The Editor</h2>
+      <div class="section-meta">Markdown, rendered as you type.</div>
+      <p>The editor is minimal by design. There's no toolbar — formatting happens through Markdown syntax, keyboard shortcuts, or the command palette. The preview renders inline: headers look like headers, bold looks bold, code blocks get syntax hints.</p>
+
+      <h3>Markdown basics</h3>
+      <p>Everything you already know works. thorn supports the CommonMark spec plus a few writing-friendly extensions:</p>
+      <ul>
+        <li><strong>Headings</strong> — <code># H1</code>, <code>## H2</code>, <code>### H3</code></li>
+        <li><strong>Bold</strong> — <code>**bold**</code> or <code>__bold__</code></li>
+        <li><strong>Italic</strong> — <code>*italic*</code> or <code>_italic_</code></li>
+        <li><strong>Strikethrough</strong> — <code>~~text~~</code></li>
+        <li><strong>Code</strong> — inline <code>`backticks`</code> or fenced <code>```</code> blocks</li>
+        <li><strong>Blockquote</strong> — <code>> text</code></li>
+        <li><strong>Horizontal rule</strong> — <code>---</code></li>
+        <li><strong>Links</strong> — <code>[label](url)</code></li>
+      </ul>
+
+      <h3>Formatting shortcuts</h3>
+      <p>Select text first, then press the shortcut. It wraps your selection in the right syntax.</p>
+      <table class="shortcut-table">
+        <thead>
+          <tr><th>Format</th><th>Shortcut</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Bold</td><td><kbd>⌘</kbd><kbd>B</kbd></td></tr>
+          <tr><td>Italic</td><td><kbd>⌘</kbd><kbd>I</kbd></td></tr>
+          <tr><td>Strikethrough</td><td><kbd>⌘</kbd><kbd>Shift</kbd><kbd>S</kbd></td></tr>
+          <tr><td>Code (inline)</td><td><kbd>⌘</kbd><kbd>E</kbd></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table of contents</h3>
+      <p>Open the command palette and choose <strong>Toggle Contents</strong> (or press <kbd>⌘</kbd><kbd>Shift</kbd><kbd>T</kbd>). A panel slides out on the right with every heading in the document. Click any heading to jump to it.</p>
+
+      <figure class="fig">
+        <img src="media/04-toc.png" alt="Table of contents panel">
+        <figcaption>Table of contents — right panel, all headings navigable</figcaption>
+      </figure>
+    </section>
+
+    <!-- THEMES -->
+    <section class="section" id="themes">
+      <h2>Themes</h2>
+      <div class="section-meta">Eight of them. One keystroke.</div>
+      <p>thorn ships with eight themes. Each one was tuned for a specific mood or lighting condition — not just color-inverted.</p>
+
+      <div class="theme-grid">
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#f6f1e9;"></div>
+          <div class="theme-swatch-label" style="background:#ede5d8;color:#1c1810;">Paper</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#f5eedf;"></div>
+          <div class="theme-swatch-label" style="background:#ede0c8;color:#3d2b1f;">Sepia</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#f8f8f8;"></div>
+          <div class="theme-swatch-label" style="background:#efefef;color:#1a1a1a;">Default</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#1e1e1e;"></div>
+          <div class="theme-swatch-label" style="background:#2a2a2a;color:#ccc;">Dark</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#0d0f1a;"></div>
+          <div class="theme-swatch-label" style="background:#13162a;color:#8a9cc2;">Midnight</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#1a2318;"></div>
+          <div class="theme-swatch-label" style="background:#1f2b1c;color:#7aab6a;">Forest</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#1c1208;"></div>
+          <div class="theme-swatch-label" style="background:#231606;color:#d4853a;">Ember</div>
+        </div>
+        <div class="theme-swatch">
+          <div class="theme-swatch-body" style="background:#eef4f9;"></div>
+          <div class="theme-swatch-label" style="background:#dceaf4;color:#1c2c3a;">Ice</div>
+        </div>
+      </div>
+
+      <h3>Switching themes</h3>
+      <p>Three ways to switch:</p>
+      <ul>
+        <li>Open the <strong>theme picker</strong> from the command palette (<kbd>⌘</kbd><kbd>K</kbd> → Themes)</li>
+        <li>Press <kbd>⌘</kbd><kbd>Shift</kbd><kbd>;</kbd> to cycle through all eight in order</li>
+        <li>Use the command palette and type the theme name directly</li>
+      </ul>
+
+      <figure class="fig">
+        <img src="media/thorn-split-paper-midnight.png" alt="Paper theme left, Midnight theme right">
+        <figcaption>Paper (light) and Midnight (dark) — two of eight themes</figcaption>
+      </figure>
+    </section>
+
+    <!-- FOCUS MODE -->
+    <section class="section" id="focus">
+      <h2>Focus Mode</h2>
+      <div class="section-meta">No sidebar. No status bar. Nothing.</div>
+      <p>Focus mode removes everything except the document. Sidebars retract, the status bar vanishes, the chrome disappears. The current paragraph is highlighted; everything else dims.</p>
+      <p>It's designed for the part of writing that needs silence — not outlining, not referencing, not reviewing. Just producing.</p>
+
+      <h3>Entering focus mode</h3>
+      <ul>
+        <li>Press <kbd>⌘</kbd><kbd>Shift</kbd><kbd>F</kbd></li>
+        <li>Or open the command palette and choose <strong>Focus Mode</strong></li>
+      </ul>
+      <p>Press the same shortcut to exit. Or hit <kbd>Esc</kbd>.</p>
+
+      <figure class="fig">
+        <img src="media/thorn-focus-looping.gif" alt="Focus mode — paragraph dimming animation">
+        <figcaption>Focus mode — the active paragraph stays bright, everything else dims</figcaption>
+      </figure>
+
+      <h3>What stays visible</h3>
+      <p>The document itself, the cursor, and the scroll position. That's it. No word count, no filename, no buttons.</p>
+
+      <div class="callout">
+        <div class="callout-label">Tip</div>
+        <p>Focus mode pairs well with a dark theme — Midnight or Dark — if you're writing at night. Paper or Sepia work better in daylight.</p>
+      </div>
+    </section>
+
+    <!-- FILE BROWSER -->
+    <section class="section" id="files">
+      <h2>File Browser</h2>
+      <div class="section-meta">Left sidebar. All your documents.</div>
+      <p>The left panel shows all documents stored in thorn. Click any file to open it. Rename it by clicking the title. Delete it from the document menu.</p>
+
+      <figure class="fig">
+        <img src="media/02-filebrowser.png" alt="File browser sidebar">
+        <figcaption>Left panel — all your documents, one click to switch</figcaption>
+      </figure>
+
+      <h3>Creating and managing documents</h3>
+      <ul>
+        <li><strong>New document</strong> — press <kbd>⌘</kbd><kbd>N</kbd> or use the command palette</li>
+        <li><strong>Switch document</strong> — click any file in the browser, or <kbd>⌘</kbd><kbd>P</kbd> for a search prompt</li>
+        <li><strong>Rename</strong> — click the document title at the top of the editor</li>
+        <li><strong>Delete</strong> — open the command palette → Delete Document (prompts for confirmation)</li>
+      </ul>
+
+      <h3>Toggling the panel</h3>
+      <p>Press <kbd>⌘</kbd><kbd>1</kbd> to show or hide the file browser. It stays hidden in focus mode.</p>
+
+      <h3>Document storage</h3>
+      <p>Documents are stored in <code>localStorage</code> in your browser. They're tied to the device and browser profile — not an account. If you clear browser data, they're gone. Use GitHub sync to back them up.</p>
+    </section>
+
+    <!-- TABS -->
+    <section class="section" id="tabs">
+      <h2>Tabs</h2>
+      <div class="section-meta">Multiple documents. No clutter.</div>
+      <p>When you have more than one document open, thorn adds a tab bar at the top. It stays hidden until you need it.</p>
+
+      <h3>Revealing the tab bar</h3>
+      <p>Move your cursor to the top-left corner of the screen. The tab bar slides into view. Move away and it disappears.</p>
+      <p>While visible: click a tab to switch, <strong>+</strong> to open a new document, <strong>×</strong> to close a tab.</p>
+
+      <h3>Why it hides</h3>
+      <p>Thorn keeps the writing surface uninterrupted. The tab bar is there when you need it, invisible when you don't.</p>
+    </section>
+
+    <!-- AI ANNOTATIONS -->
+    <section class="section" id="annotations">
+      <h2>AI Annotations</h2>
+      <div class="section-meta">Inline feedback. Your key, your data.</div>
+      <p>Select any passage in the editor. A small annotation button appears. Click it and thorn sends that selection to an AI model for analysis — style, argument, clarity, structure, whatever you ask.</p>
+      <p>The result appears as an inline annotation in the right panel, anchored to the passage you selected.</p>
+
+      <figure class="fig">
+        <img src="media/03-annotations.png" alt="AI annotations panel">
+        <figcaption>Right panel — annotations anchored to selected passages</figcaption>
+      </figure>
+
+      <h3>Setting up your API key</h3>
+      <p>thorn uses your own API key — typically OpenAI. Nothing is proxied through a server. The key is stored in <code>localStorage</code> and sent directly from your browser to the model provider.</p>
+      <ol>
+        <li>Open Settings (<kbd>⌘</kbd><kbd>,</kbd>)</li>
+        <li>Paste your API key in the <strong>AI Key</strong> field</li>
+        <li>Save. Annotations are now active.</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-label">Privacy</div>
+        <p>Your API key and your text are sent directly from your browser to OpenAI (or your configured provider). They never pass through any thorn server — because there is no thorn server.</p>
+      </div>
+
+      <h3>Annotation types</h3>
+      <p>You can configure what the AI looks for in Settings. The default prompt asks for general writing feedback, but you can tune it: structural critique, line-editing, argument logic, tone review, whatever fits your current draft stage.</p>
+
+      <h3>Managing annotations</h3>
+      <p>Press <kbd>⌘</kbd><kbd>2</kbd> to toggle the annotations panel. Individual annotations can be dismissed by clicking the × on each card.</p>
+    </section>
+
+    <!-- GITHUB SYNC -->
+    <section class="section" id="github">
+      <h2>GitHub Sync</h2>
+      <div class="section-meta">Version control for your writing.</div>
+      <p>Connect thorn to a GitHub repository and your documents sync as Markdown files. Each save creates a commit. You get full version history, a backup, and the ability to write from any device that has access to the repo.</p>
+
+      <h3>Setup</h3>
+      <ol>
+        <li>Create a GitHub repository (or use an existing one). It can be private.</li>
+        <li>Generate a <strong>Personal Access Token</strong> with <code>repo</code> scope at <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--accent);text-decoration:none;">github.com/settings/tokens</a>.</li>
+        <li>Open thorn Settings (<kbd>⌘</kbd><kbd>,</kbd>)</li>
+        <li>Paste your token and repository name (<code>owner/repo</code>)</li>
+        <li>Save. Sync is now active.</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-label">What gets synced</div>
+        <p>Each document in thorn maps to a <code>.md</code> file in the repository. The filename is derived from the document title. Saves are committed automatically; you can also trigger a manual sync from the command palette.</p>
+      </div>
+
+      <h3>Conflict handling</h3>
+      <p>If the remote file has changed since your last pull, thorn will warn you before overwriting. You can choose to pull the remote version (discarding local changes) or push your local version (overwriting remote).</p>
+
+      <h3>Working without sync</h3>
+      <p>GitHub sync is entirely optional. thorn works perfectly offline and without any external account. Documents live in <code>localStorage</code> until you delete them or clear browser storage.</p>
+    </section>
+
+    <!-- COMMAND PALETTE -->
+    <section class="section" id="palette">
+      <h2>Command Palette</h2>
+      <div class="section-meta">Everything, one keystroke away.</div>
+      <p>The command palette is the fastest way to do anything in thorn. Open it with <kbd>⌘</kbd><kbd>K</kbd>, type a few letters, and press Enter.</p>
+
+      <figure class="fig">
+        <img src="media/06-cmdpalette.png" alt="Command palette">
+        <figcaption>Command palette — fuzzy search, every action surfaced instantly</figcaption>
+      </figure>
+
+      <h3>What you can do from the palette</h3>
+      <ul>
+        <li>Switch documents — type a title, jump to any file</li>
+        <li>Create a new document</li>
+        <li>Switch theme — type the theme name</li>
+        <li>Toggle Focus Mode</li>
+        <li>Toggle File Browser</li>
+        <li>Toggle Annotations panel</li>
+        <li>Toggle Table of Contents</li>
+        <li>Open Settings</li>
+        <li>Sync to GitHub (if configured)</li>
+        <li>Delete current document</li>
+        <li>Change font size / line width</li>
+      </ul>
+
+      <p>Search is fuzzy — type <code>foc</code> to get Focus Mode, <code>mid</code> to get Midnight theme.</p>
+    </section>
+
+    <!-- KEYBOARD SHORTCUTS -->
+    <section class="section" id="shortcuts">
+      <h2>Keyboard Shortcuts</h2>
+      <div class="section-meta">Full reference.</div>
+
+      <h3>Editor</h3>
+      <table class="shortcut-table">
+        <thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+        <tbody>
+          <tr><td>Command palette</td><td><kbd>⌘</kbd><kbd>K</kbd></td></tr>
+          <tr><td>New document</td><td><kbd>⌘</kbd><kbd>N</kbd></td></tr>
+          <tr><td>Switch document (search)</td><td><kbd>⌘</kbd><kbd>P</kbd></td></tr>
+          <tr><td>Save / sync</td><td><kbd>⌘</kbd><kbd>S</kbd></td></tr>
+          <tr><td>Settings</td><td><kbd>⌘</kbd><kbd>,</kbd></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Formatting</h3>
+      <table class="shortcut-table">
+        <thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+        <tbody>
+          <tr><td>Bold</td><td><kbd>⌘</kbd><kbd>B</kbd></td></tr>
+          <tr><td>Italic</td><td><kbd>⌘</kbd><kbd>I</kbd></td></tr>
+          <tr><td>Strikethrough</td><td><kbd>⌘</kbd><kbd>Shift</kbd><kbd>S</kbd></td></tr>
+          <tr><td>Inline code</td><td><kbd>⌘</kbd><kbd>E</kbd></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Panels</h3>
+      <table class="shortcut-table">
+        <thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+        <tbody>
+          <tr><td>Toggle file browser</td><td><kbd>⌘</kbd><kbd>1</kbd></td></tr>
+          <tr><td>Toggle annotations</td><td><kbd>⌘</kbd><kbd>2</kbd></td></tr>
+          <tr><td>Toggle table of contents</td><td><kbd>⌘</kbd><kbd>Shift</kbd><kbd>T</kbd></td></tr>
+          <tr><td>Focus mode</td><td><kbd>⌘</kbd><kbd>Shift</kbd><kbd>F</kbd></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Themes</h3>
+      <table class="shortcut-table">
+        <thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+        <tbody>
+          <tr><td>Cycle themes</td><td><kbd>⌘</kbd><kbd>Shift</kbd><kbd>;</kbd></td></tr>
+          <tr><td>Theme picker (palette)</td><td><kbd>⌘</kbd><kbd>K</kbd> → type theme name</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="section" id="settings">
+      <h2>Settings</h2>
+      <div class="section-meta">Tuned to you. Remembered locally.</div>
+      <p>Open Settings with <kbd>⌘</kbd><kbd>,</kbd> or through the command palette.</p>
+
+      <figure class="fig">
+        <img src="media/07-settings.png" alt="Settings panel">
+        <figcaption>Settings panel — font, line width, language, word goal, AI key</figcaption>
+      </figure>
+
+      <h3>Available settings</h3>
+      <ul>
+        <li><strong>Font size</strong> — small, medium, large, extra large. Adjusts both edit and preview text.</li>
+        <li><strong>Line width</strong> — narrow, normal, wide, full. Controls the maximum line length of the writing area.</li>
+        <li><strong>Spell check language</strong> — sets the browser's built-in spellchecker locale.</li>
+        <li><strong>Autocorrect</strong> — enable or disable smart quotes, em-dashes, and similar substitutions.</li>
+        <li><strong>Word goal</strong> — set a per-document word target. A subtle progress indicator appears at the bottom of the editor.</li>
+        <li><strong>AI API key</strong> — paste your OpenAI key here to enable annotations.</li>
+        <li><strong>GitHub token & repo</strong> — for sync setup.</li>
+      </ul>
+
+      <p>All settings are stored in <code>localStorage</code>. They persist across sessions on the same device. No cloud, no account.</p>
+
+      <div class="callout">
+        <div class="callout-label">Resetting</div>
+        <p>To reset all settings and documents, clear your browser's site data for the thorn URL. Be aware this will also delete all locally stored documents — export or sync to GitHub first.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Active sidebar link tracking
+  const sections = document.querySelectorAll('.section');
+  const links = document.querySelectorAll('.sidebar-link');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-link[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
