@@ -2092,7 +2092,7 @@ async function loadFBTree(){
   document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Loading…</div>';
   const branch=S.cfg.ghBranch||'main';
   try{
-    const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/git/trees/${branch}?recursive=1`,{
+    const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/git/trees/${branch}?recursive=1&_t=${Date.now()}`,{
       headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}
     });
     if(!r.ok){document.getElementById('fb-tree').innerHTML=`<div style="padding:16px;color:var(--fg3);font-size:12px">Error: ${r.status}</div>`;return;}
@@ -2270,6 +2270,9 @@ async function doNewFile(){
     localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));
     closeMo('mo-newfile');
     toast('Created '+path);
+    // Optimistically add to tree so it appears immediately
+    if(!fbTree.find(f=>f.path===path)) fbTree.push({path,type:'blob',sha:null});
+    renderFBTree(); openFB();
     await loadFBTree();
     ta.value=''; ta.dispatchEvent(new Event('input'));
     saveDoc(true); dot('ok'); ta.focus();
