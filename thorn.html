@@ -360,12 +360,243 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 #tab-new:hover{color:var(--fg)}
 /* body offset: tabs auto-hide, no permanent offset */
 /* github commit banner */
-#gh-banner{position:fixed;top:44px;left:50%;transform:translateX(-50%) translateY(-8px);background:var(--accent);color:#fff;font-size:12px;font-family:-apple-system,"SF Pro Text",system-ui,sans-serif;padding:7px 18px;border-radius:6px;opacity:0;pointer-events:none;z-index:900;transition:opacity .25s,transform .25s;white-space:nowrap;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+#gh-banner{position:fixed;top:44px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1a7f4b;color:#fff;font-size:13px;font-weight:600;letter-spacing:.01em;font-family:-apple-system,"SF Pro Text",system-ui,sans-serif;padding:9px 22px;border-radius:8px;opacity:0;pointer-events:none;z-index:900;transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:0 3px 16px rgba(0,0,0,.28)}
 #gh-banner.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ========================================================
+   MANAGER MODE — Obsidian-like skin
+   Activated by: body[data-mode="manager"]
+   ======================================================== */
+
+/* Toggle button — always visible */
+#mode-toggle-zone {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 90px;
+  height: 54px;
+  z-index: 9998;
+  pointer-events: all;
+}
+#mode-toggle {
+  position: fixed;
+  top: 10px;
+  right: 14px;
+  z-index: 9999;
+  background: none;
+  border: 1px solid transparent;
+  color: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: var(--font);
+  transition: color .2s, border-color .2s, opacity .2s;
+  line-height: 1.6;
+  opacity: 0;
+  pointer-events: none;
+}
+#mode-toggle-zone:hover ~ #mode-toggle,
+#mode-toggle:hover { opacity: 1; color: var(--fg2); border-color: var(--fg3); pointer-events: all; }
+#mode-toggle:hover { color: var(--fg); border-color: var(--fg); }
+body[data-mode="manager"] #mode-toggle { opacity: 1; color: var(--fg2); border-color: var(--fg3); pointer-events: all; }
+
+/* ── MANAGER MODE — sidebar only, real editor stays active ───────────────── */
+
+/* Sidebar */
+#mgr-sidebar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 210px;
+  border-right: 1px solid var(--border, #e8e4de);
+  background: var(--bg);
+  z-index: 500;
+  flex-direction: column;
+  overflow: hidden;
+}
+body[data-mode="manager"] #mgr-sidebar { display: flex; }
+
+#mgr-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border, #e8e4de);
+  flex-shrink: 0;
+}
+#mgr-sidebar-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg3);
+  font-family: var(--font);
+  font-weight: 600;
+}
+.mgr-hdr-btn {
+  background: none;
+  border: 1px solid var(--fg3);
+  color: var(--fg3);
+  cursor: pointer;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  line-height: 1;
+  font-family: var(--font);
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.mgr-hdr-btn:hover { color: var(--fg); border-color: var(--fg); }
+
+#mgr-file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.mgr-file {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--fg2);
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mgr-file:hover { background: rgba(0,0,0,.04); color: var(--fg); }
+.mgr-file.active {
+  border-left-color: var(--accent, #8b6f47);
+  color: var(--fg);
+  background: rgba(0,0,0,.04);
+  font-weight: 500;
+}
+.mgr-file-wc {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fg3);
+  flex-shrink: 0;
+}
+
+/* Shift col right when sidebar is open */
+body[data-mode="manager"] #col {
+  padding-left: 210px !important;
+}
+body[data-mode="manager"] #prev {
+  padding-left: 210px !important;
+}
+
+/* Pin top-menu visible in manager mode */
+body[data-mode="manager"] #top-menu {
+  top: 0 !important;
+}
+
+/* Manager toolbar */
+#mgr-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border, #e8e4de);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+#mgr-toolbar .mgr-btn {
+  background: none;
+  border: 1px solid var(--fg3);
+  color: var(--fg2);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font);
+  transition: color .15s, border-color .15s, background .15s;
+  white-space: nowrap;
+}
+#mgr-toolbar .mgr-btn:hover { color: var(--fg); border-color: var(--fg); background: var(--fg5, rgba(0,0,0,.04)); }
+#mgr-toolbar .mgr-title {
+  flex: 1;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--fg2);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Main area: sidebar + editor + meta */
+#mgr-main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* File tree sidebar */
+#mgr-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border, #e8e4de);
+  overflow-y: auto;
+  padding: 8px 0;
+  background: var(--bg);
+}
+#mgr-sidebar-head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg3);
+  padding: 6px 14px 4px;
+  font-family: var(--font);
+  font-weight: 600;
+}
+.mgr-file {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--fg2);
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mgr-file:hover { background: var(--fg5, rgba(0,0,0,.04)); color: var(--fg); }
+.mgr-file.active { border-left-color: var(--accent, #8b6f47); color: var(--fg); background: var(--fg5, rgba(0,0,0,.04)); font-weight: 500; }
+.mgr-file-icon { font-size: 13px; flex-shrink: 0; }
+
+
+
 
 </style>
 </head>
-<body>
+<body data-mode="writer">
+
+<!-- Mode toggle button (always visible) -->
+<div id="mode-toggle-zone"></div>
+<button id="mode-toggle" onclick="toggleManagerMode()" title="Toggle Manager mode (⌘⇧M)">⊞ manager</button>
+
+<!-- Manager mode sidebar (real #ta editor stays active) -->
+<div id="mgr-sidebar">
+  <div id="mgr-sidebar-head">
+    <span id="mgr-sidebar-label">Documents</span>
+    <button class="mgr-hdr-btn" onclick="mgrNewDoc()" title="New document">+</button>
+  </div>
+  <div id="mgr-file-list"></div>
+</div>
 
 <div id="tab-trigger"></div>
 <div id="tab-bar" style="display:none"></div>
@@ -592,6 +823,8 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
       <div class="spanel" id="sp-writing" style="display:none">
         <label>Daily word goal <span style="color:var(--fg3);font-weight:400">(0 = off)</span></label>
         <input class="fi" id="s-wg" type="number" min="0" placeholder="500">
+        <label>Auto-save every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
+        <input class="fi" id="s-as-mins" type="number" min="0" max="60" placeholder="5">
         <label>Auto-commit every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
         <input class="fi" id="s-ac-mins" type="number" min="0" max="120" placeholder="15">
         <label>Spellcheck language</label>
@@ -711,7 +944,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
       <button id="fb-close" onclick="closeFB()">✕</button>
     </div>
   </div>
-  <div id="fb-repo"><span id="fb-repo-label">No GitHub repo configured</span><button id="fb-reload" onclick="loadFBTree()" title="Refresh">↻</button></div>
+  <div id="fb-repo"><span id="fb-repo-label">No GitHub repo configured</span><button id="fb-reload" onclick="fbTree=[];openFB()" title="Refresh">↻</button></div>
   <div id="fb-tree"><div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div></div>
 </div>
 
@@ -888,7 +1121,7 @@ function showGhBanner(msg){
   el.textContent=msg;
   el.classList.add('on');
   clearTimeout(ghBannerTimer);
-  ghBannerTimer=setTimeout(()=>el.classList.remove('on'),3500);
+  ghBannerTimer=setTimeout(()=>el.classList.remove('on'),5000);
 }
 
 function init(){
@@ -899,7 +1132,7 @@ function init(){
   else newDoc(true);
   applyTheme();
   setInterval(()=>{if(S.dirty)saveDoc(true)},30000);
-  scheduleAutoCommit();
+  scheduleAutoSave(); scheduleAutoCommit();
   if(localStorage.getItem('prose_ftb_pinned')==='1') togglePinFtb();
   updateGoal();
   initLang();
@@ -930,6 +1163,7 @@ function saveSettings(){
   const selPath=(fileSel&&fileSel.value!=='__new__'&&fileSel.value)||'';
   S.cfg.ghPath=manualPath||selPath;
   S.cfg.wordGoal=parseInt(document.getElementById('s-wg').value)||0;
+  S.cfg.autoSaveMins=parseInt(document.getElementById('s-as-mins').value)||0;
   S.cfg.autoCommitMins=parseInt(document.getElementById('s-ac-mins').value)||0;
   S.cfg.aiEndpoint=document.getElementById('s-ai-endpoint').value.trim();
   S.cfg.aiKey=document.getElementById('s-ai-key').value.trim();
@@ -1460,6 +1694,7 @@ function openSettings(tab){
   document.getElementById('s-gh-branch').value=S.cfg.ghBranch||'main';
   document.getElementById('s-gh-path').value=S.cfg.ghPath||'';
   document.getElementById('s-wg').value=S.cfg.wordGoal||0;
+  document.getElementById('s-as-mins').value=S.cfg.autoSaveMins||0;
   document.getElementById('s-ac-mins').value=S.cfg.autoCommitMins||0;
   document.getElementById('s-ai-endpoint').value=S.cfg.aiEndpoint||'';
   document.getElementById('s-ai-key').value=S.cfg.aiKey||'';
@@ -1498,6 +1733,12 @@ function commitNow(){closeMo('mo-ann');syncToGH(false);}
 let _lastCommitSha='';
 let _autoCommitTimer=null;
 
+let _autoSaveTimer=null;
+function scheduleAutoSave(){
+  clearTimeout(_autoSaveTimer);
+  const interval=(parseInt(S.cfg.autoSaveMins)||0)*60*1000;
+  if(interval>0) _autoSaveTimer=setTimeout(()=>{saveDocs();scheduleAutoSave();},interval);
+}
 function scheduleAutoCommit(){
   clearTimeout(_autoCommitTimer);
   const interval=(parseInt(S.cfg.autoCommitMins)||0)*60*1000;
@@ -1527,7 +1768,7 @@ async function syncToGH(auto){
       const commitSha=data.commit&&data.commit.sha?data.commit.sha.substring(0,8):'';
       _lastCommitSha=commitSha;
       dot('ok');
-      const ghMsg=auto?`Auto-committed ${commitSha}`:`✓ Committed ${commitSha}`; toast(ghMsg); showGhBanner(ghMsg);
+      const ghMsg=auto?`Auto-committed ${commitSha}`:`✓ Pushed to GitHub  ${commitSha}`; toast(ghMsg); showGhBanner(ghMsg);
       S.dirty=false;
       scheduleAutoCommit();
     } else {
@@ -1827,8 +2068,14 @@ let fbOpen=false, fbTree=[];
 function openFB(){
   document.getElementById('fb').classList.add('open');
   fbOpen=true;
-  if(!fbTree.length && S.cfg.ghTok && S.cfg.ghRepo) loadFBTree();
-  else if(!S.cfg.ghTok) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div>';
+  // Also check live settings fields in case user connected but hasn't clicked Save
+  const liveTok=S.cfg.ghTok||(document.getElementById('s-gh-tok')&&document.getElementById('s-gh-tok').value.trim());
+  const liveRepo=S.cfg.ghRepo||(document.getElementById('s-gh-repo-sel')&&document.getElementById('s-gh-repo-sel').value)||(document.getElementById('s-gh-repo')&&document.getElementById('s-gh-repo').value);
+  const liveBranch=S.cfg.ghBranch||(document.getElementById('s-gh-branch-sel')&&document.getElementById('s-gh-branch-sel').value)||'main';
+  if(liveTok&&liveRepo&&(S.cfg.ghTok!==liveTok||S.cfg.ghRepo!==liveRepo)){S.cfg.ghTok=liveTok;S.cfg.ghRepo=liveRepo;S.cfg.ghBranch=liveBranch;localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));fbTree=[];}
+  if(!fbTree.length && liveTok && liveRepo) loadFBTree();
+  else if(!fbTree.length && !liveTok) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div>';
+  else if(!fbTree.length && !liveRepo) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Select a repo in Settings (⌘,), then click Save.</div>';
 }
 function closeFB(){document.getElementById('fb').classList.remove('open');fbOpen=false;}
 function toggleFB(){fbOpen?closeFB():openFB();}
@@ -2187,6 +2434,8 @@ async function ghPickBranch(){
   document.getElementById('s-gh-branch').value=branch;
   const tok=document.getElementById('s-gh-tok').value.trim();
   const repo=document.getElementById('s-gh-repo-sel').value||document.getElementById('s-gh-repo').value;
+  // Auto-sync to S.cfg so sidebar loads without needing Save
+  if(tok){S.cfg.ghTok=tok;S.cfg.ghRepo=repo;S.cfg.ghBranch=branch;localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));fbTree=[];if(fbOpen)loadFBTree();}
   // load files
   document.getElementById('gh-step-file').style.display='block';
   const fsel=document.getElementById('s-gh-file-sel');
@@ -2208,6 +2457,7 @@ function ghPickFile(){
   } else if(val){
     manual.style.display='none';
     manual.value=val;
+    S.cfg.ghPath=val; localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));
     ghShowSummary();
   }
 }
@@ -2709,7 +2959,7 @@ function obNext() {
       const pathVal = (path && path.value.trim()) || 'notes/';
       S.cfg.ghPath = pathVal.endsWith('/') ? pathVal : pathVal + '/';
     }
-    save();
+    saveSettings();
   }
   if (obStep < obSteps.length - 1) { obGoto(obStep + 1); }
   else { obDismiss(); }
@@ -2730,7 +2980,7 @@ async function obGhConnect() {
     });
     if (!r.ok) throw new Error('Invalid token or no access.');
     const repos = await r.json();
-    S.cfg.ghTok = token; save();
+    S.cfg.ghTok = token; saveSettings();
     const sel = document.getElementById('ob-gh-repo-sel');
     sel.innerHTML = '<option value="">— choose a repo —</option>' +
       repos.map(r => `<option value="${r.full_name}">${r.full_name}${r.private ? ' 🔒' : ''}</option>`).join('');
@@ -2760,6 +3010,107 @@ if (!localStorage.getItem('thorn_onboarded')) obShow();
   menu.addEventListener('mouseleave',hide);
 })();
 /* click outside to close settings */
+
+/* ========================================================
+   MANAGER MODE — sidebar only, real editor stays fully active
+   All writer features (find, AI, shortcuts, annotations) work
+   unchanged. Manager adds: file browser sidebar + doc CRUD.
+   ======================================================== */
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleManagerMode() {
+  const body = document.body;
+  const btn = document.getElementById('mode-toggle');
+  if (body.dataset.mode === 'manager') {
+    body.dataset.mode = 'writer';
+    btn.textContent = '⊞ manager';
+    btn.title = 'Switch to Manager mode (⌘⇧M)';
+    localStorage.setItem('thorn_mode', 'writer');
+  } else {
+    body.dataset.mode = 'manager';
+    btn.textContent = '✎ writer';
+    btn.title = 'Switch to Writer mode (⌘⇧M)';
+    mgrRefreshFileList();
+    localStorage.setItem('thorn_mode', 'manager');
+  }
+}
+
+function mgrRefreshFileList() {
+  const list = document.getElementById('mgr-file-list');
+  if (!list) return;
+  list.innerHTML = (S.docs || []).map(d => {
+    const active = d.id === S.cur ? ' active' : '';
+    const title = d.title || 'Untitled';
+    const wc = d.content ? d.content.trim().split(/\s+/).filter(Boolean).length : 0;
+    return `<div class="mgr-file${active}" onclick="mgrLoadDoc('${escHtml(d.id)}')" title="${escHtml(title)}">
+      <span style="overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1">${escHtml(title)}</span>
+      <span class="mgr-file-wc">${wc > 0 ? wc.toLocaleString() : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+function mgrLoadDoc(id) {
+  // Use the existing openDoc function if available, else do it manually
+  if (typeof openDoc === 'function') {
+    openDoc(id);
+  } else {
+    // Manual fallback: load into real #ta
+    const doc = (S.docs || []).find(d => d.id === id);
+    if (!doc) return;
+    S.cur = id;
+    if (typeof localStorage !== 'undefined') localStorage.setItem('prose_cur', id);
+    const ta = document.getElementById('ta');
+    if (ta) {
+      ta.value = doc.content || '';
+      ta.dispatchEvent(new Event('input'));
+      ta.focus();
+    }
+  }
+  // Always refresh the sidebar to update active state
+  setTimeout(mgrRefreshFileList, 50);
+}
+
+function mgrNewDoc() {
+  // Use existing newDoc function if available
+  if (typeof newDoc === 'function') {
+    newDoc();
+  } else {
+    const id = 'doc_' + Date.now();
+    if (!S.docs) S.docs = [];
+    S.docs.unshift({id, title:'Untitled', content:'', created:Date.now(), updated:Date.now()});
+    if (typeof saveDocs === 'function') saveDocs();
+    mgrLoadDoc(id);
+  }
+  setTimeout(mgrRefreshFileList, 100);
+}
+
+// Listen for doc changes to keep sidebar in sync
+document.addEventListener('thorn:docchange', mgrRefreshFileList);
+// Also refresh after input (debounced) to update word counts
+let mgrRefreshTimer = null;
+document.getElementById('ta') && document.getElementById('ta').addEventListener('input', function() {
+  clearTimeout(mgrRefreshTimer);
+  mgrRefreshTimer = setTimeout(mgrRefreshFileList, 1000);
+});
+
+// Keyboard shortcut Cmd/Ctrl+Shift+M
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'M') {
+    e.preventDefault();
+    toggleManagerMode();
+  }
+});
+
+// Restore mode on load
+(function() {
+  if (localStorage.getItem('thorn_mode') === 'manager') {
+    setTimeout(function() { toggleManagerMode(); }, 300);
+  }
+})();
+
 </script>
 </body>
 </html>
