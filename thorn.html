@@ -431,208 +431,42 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 #gh-banner{position:fixed;top:44px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1a7f4b;color:#fff;font-size:13px;font-weight:600;letter-spacing:.01em;font-family:var(--font-ui);padding:9px 22px;border-radius:var(--radius-sm);opacity:0;pointer-events:none;z-index:900;transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:var(--shadow-lg)}
 #gh-banner.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ========================================================
-   MANAGER MODE — Obsidian-like skin
-   Activated by: body[data-mode="manager"]
-   ======================================================== */
+/* ── (manager mode removed — functionality integrated into file browser) ── */
 
-/* Toggle button — always visible */
-#mode-toggle-zone {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 90px;
-  height: 54px;
-  z-index: 9998;
-  pointer-events: all;
-}
-#mode-toggle {
-  position: fixed;
-  top: 10px;
-  right: 14px;
-  z-index: 9999;
-  background: none;
-  border: 1px solid transparent;
-  color: transparent;
-  cursor: pointer;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-ui);
-  font-weight: 500;
-  transition: color .2s, border-color .2s, opacity .2s;
-  line-height: 1.6;
-  opacity: 0;
-  pointer-events: none;
-}
-#mode-toggle-zone:hover ~ #mode-toggle,
-#mode-toggle:hover { opacity: 1; color: var(--fg2); border-color: var(--fg3); pointer-events: all; }
-#mode-toggle:hover { color: var(--fg); border-color: var(--fg); }
-body[data-mode="manager"] #mode-toggle { opacity: 1; color: var(--fg2); border-color: var(--fg3); pointer-events: all; }
+/* ── CONTEXT MENU ── */
+#ctx-menu{position:fixed;z-index:900;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:4px;min-width:180px;box-shadow:var(--shadow-panel);display:none;font-family:var(--font-ui)}
+#ctx-menu.open{display:block}
+.ctx-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-secondary);transition:background .1s}
+.ctx-item:hover{background:var(--surface-hover);color:var(--text-primary)}
+.ctx-key{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)}
+.ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
 
-/* ── MANAGER MODE — sidebar only, real editor stays active ───────────────── */
+/* ── QUICK SWITCHER ── */
+#qs-mo .mbox{width:480px;padding:0;overflow:hidden}
+#qs-in{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);padding:14px 18px;font-family:var(--font-ui);font-size:15px;color:var(--fg);outline:none}
+#qs-in::placeholder{color:var(--text-tertiary)}
+.qs-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-radius:0}
+.qs-item:hover,.qs-item.sel{background:var(--accent-subtle)}
+.qs-title{font-size:14px;font-family:var(--font-ui);color:var(--fg);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qs-item.sel .qs-title{color:var(--accent-text)}
+.qs-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)}
+.qs-icon{font-size:14px;color:var(--text-tertiary);width:18px;text-align:center}
 
-/* Sidebar */
-#mgr-sidebar {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 210px;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  z-index: 500;
-  flex-direction: column;
-  overflow: hidden;
-}
-body[data-mode="manager"] #mgr-sidebar { display: flex; }
+/* ── OUTLINE (in file browser) ── */
+#fb-outline{border-top:1px solid var(--border);padding:8px 0;flex-shrink:0;max-height:200px;overflow-y:auto}
+#fb-outline-head{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:8px 16px 6px;font-family:var(--font-ui)}
+.ol-item{padding:5px 16px;cursor:pointer;font-size:12px;font-family:var(--font-ui);color:var(--text-secondary);transition:background .1s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ol-item:hover{background:var(--surface-hover);color:var(--text-primary)}
+.ol-h1{font-weight:600;color:var(--text-primary)}
+.ol-h2{padding-left:26px}
+.ol-h3{padding-left:36px;opacity:.7}
 
-#mgr-sidebar-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px 10px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-#mgr-sidebar-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--fg3);
-  font-family: var(--font-ui);
-  font-weight: 600;
-}
-.mgr-hdr-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--fg3);
-  cursor: pointer;
-  font-size: 12px;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-sm);
-  line-height: 1;
-  font-family: var(--font-ui);
-  transition: color .15s, border-color .15s, background .15s;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-.mgr-hdr-btn:hover { color: var(--accent-text); border-color: var(--accent); background: var(--accent-subtle); }
-
-#mgr-file-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 4px 0;
-}
-.mgr-file {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font-ui);
-  color: var(--fg2);
-  border-left: 2px solid transparent;
-  transition: background .1s, color .1s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.mgr-file:hover { background: var(--surface-hover); color: var(--fg); }
-.mgr-file.active {
-  border-left-color: var(--accent);
-  color: var(--fg);
-  background: var(--accent-subtle);
-  font-weight: 500;
-}
-.mgr-file-wc {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--fg3);
-  flex-shrink: 0;
-  font-family: var(--font-mono);
-}
-
-/* Shift col right when sidebar is open */
-body[data-mode="manager"] #col {
-  padding-left: 210px !important;
-}
-body[data-mode="manager"] #prev {
-  padding-left: 210px !important;
-}
-
-/* Pin top-menu visible in manager mode */
-body[data-mode="manager"] #top-menu {
-  top: 0 !important;
-}
-
-/* Manager toolbar */
-#mgr-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  flex-shrink: 0;
-}
-#mgr-toolbar .mgr-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--fg2);
-  cursor: pointer;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-ui);
-  font-weight: 500;
-  transition: color .15s, border-color .15s, background .15s;
-  white-space: nowrap;
-}
-#mgr-toolbar .mgr-btn:hover { color: var(--accent-text); border-color: var(--accent); background: var(--accent-subtle); }
-#mgr-toolbar .mgr-title {
-  flex: 1;
-  font-size: 13px;
-  font-family: var(--font-ui);
-  color: var(--fg2);
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Main area: sidebar + editor + meta */
-#mgr-main {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* File tree sidebar */
-#mgr-sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 8px 0;
-  background: var(--surface);
-}
-#mgr-sidebar-head {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--fg3);
-  padding: 6px 14px 4px;
-  font-family: var(--font-ui);
-  font-weight: 600;
-}
-.mgr-file-icon { font-size: 13px; flex-shrink: 0; }
-
-
+/* ── FOOTER (always visible, minimal) ── */
+#writer-foot{position:fixed;bottom:0;left:0;right:0;height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg);border-top:1px solid var(--border-subtle);z-index:50;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);opacity:.5;transition:opacity .2s}
+#writer-foot:hover{opacity:1}
+.foot-left,.foot-right{display:flex;align-items:center;gap:16px}
+.foot-btn{background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-family:var(--font-mono);font-size:11px;padding:2px 6px;border-radius:4px;transition:color .15s}
+.foot-btn:hover{color:var(--text-primary)}
 
 /* ── WIKI LINKS ── */
 .wikilink{color:var(--accent-text);text-decoration:none;border-bottom:1px dotted var(--accent);cursor:pointer;pointer-events:auto;position:relative;z-index:3;transition:opacity .15s}
@@ -700,19 +534,6 @@ body.split-view #split-prev{display:block}
 </style>
 </head>
 <body data-mode="writer">
-
-<!-- Mode toggle button (always visible) -->
-<div id="mode-toggle-zone"></div>
-<button id="mode-toggle" onclick="toggleManagerMode()" title="Toggle Manager mode (⌘⇧M)">⊞ manager</button>
-
-<!-- Manager mode sidebar (real #ta editor stays active) -->
-<div id="mgr-sidebar">
-  <div id="mgr-sidebar-head">
-    <span id="mgr-sidebar-label">Documents</span>
-    <button class="mgr-hdr-btn" onclick="mgrNewDoc()" title="New document">+</button>
-  </div>
-  <div id="mgr-file-list"></div>
-</div>
 
 <!-- Writer surface: slides to reveal panels behind it -->
 <div id="writer-surface">
@@ -1089,7 +910,52 @@ body.split-view #split-prev{display:block}
     </div>
   </div>
   <div id="fb-repo"><span id="fb-repo-label">No GitHub repo configured</span><button id="fb-reload" onclick="fbTree=[];openFB()" title="Refresh">↻</button></div>
+  <!-- Local documents -->
+  <div id="fb-local" style="border-bottom:1px solid var(--border)">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:10px 16px 6px;font-family:var(--font-ui)">Local Documents</div>
+    <div id="fb-local-list"></div>
+  </div>
   <div id="fb-tree"><div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div></div>
+  <!-- Live outline -->
+  <div id="fb-outline">
+    <div id="fb-outline-head">Outline</div>
+    <div id="fb-outline-list"></div>
+  </div>
+</div>
+
+<!-- Quick switcher -->
+<div class="mo" id="qs-mo" onclick="moOut(event,'qs-mo')">
+  <div class="mbox" style="padding:0;overflow:hidden;width:480px">
+    <input id="qs-in" placeholder="Open a document..." oninput="filterQS()" onkeydown="qsKey(event)" autocomplete="off">
+    <div id="qs-list" style="max-height:340px;overflow-y:auto;padding:4px"></div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="ctxAction('bold')">Bold <span class="ctx-key">⌘B</span></div>
+  <div class="ctx-item" onclick="ctxAction('italic')">Italic <span class="ctx-key">⌘I</span></div>
+  <div class="ctx-item" onclick="ctxAction('code')">Code <span class="ctx-key"></span></div>
+  <div class="ctx-item" onclick="ctxAction('link')">Link <span class="ctx-key">⌘K</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxAction('wiki')">Wiki Link <span class="ctx-key">[[</span></div>
+  <div class="ctx-item" onclick="ctxAction('task')">Task <span class="ctx-key">- [ ]</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxAction('annotate')">Annotate <span class="ctx-key">⌘⇧A</span></div>
+  <div class="ctx-item" onclick="ctxAction('focus')">Focus Mode <span class="ctx-key">⌘F</span></div>
+</div>
+
+<!-- Writer footer (always visible, minimal) -->
+<div id="writer-foot">
+  <div class="foot-left">
+    <span id="wf-wc">0 words</span>
+    <span id="wf-rt"></span>
+  </div>
+  <div class="foot-right">
+    <button class="foot-btn" onclick="openThemePicker()">◐</button>
+    <button class="foot-btn" id="wf-lang" onclick="cycleLang()">EN</button>
+    <button class="foot-btn" onclick="toggleFullscreen()">⤢</button>
+  </div>
 </div>
 
 <!-- Chapter navigator -->
@@ -1681,7 +1547,7 @@ ta.addEventListener('keydown',e=>{
   if(mod&&e.key==='s'&&!e.shiftKey){e.preventDefault();saveDoc();return;}
   if(mod&&e.shiftKey&&e.key==='S'){e.preventDefault();syncToGH();return;}
   if(mod&&e.shiftKey&&e.key==='P'){e.preventDefault();pullFromGH();return;}
-  if(mod&&e.key==='p'&&!e.shiftKey){e.preventDefault();togglePreview();return;}
+  if(mod&&e.key==='p'&&!e.shiftKey){e.preventDefault();openQS();return;}
   if(mod&&e.key==='f'){e.preventDefault();toggleFocus();return;}
   if(mod&&e.key==='n'){e.preventDefault();newDoc();return;}
   if(mod&&e.key==='o'){e.preventDefault();openDocs();return;}
@@ -1806,7 +1672,8 @@ const CMDS=[
   {t:'sync',l:'Pull from GitHub', k:'⌘⇧P',  fn:()=>pullFromGH()},
   {t:'sync',l:'New File on GitHub',k:'',    fn:()=>openNewFile()},
   // view
-  {t:'view',l:'Preview',          k:'⌘P',   fn:()=>togglePreview()},
+  {t:'navigate',l:'Quick Switcher', k:'⌘P',  fn:()=>openQS()},
+  {t:'view',l:'Preview',          k:'',   fn:()=>togglePreview()},
   {t:'view',l:'Focus Mode',       k:'⌘F',   fn:()=>toggleFocus()},
   {t:'view',l:'Toggle Toolbar',   k:'⌃T',   fn:()=>togglePinFtb()},
   {t:'view',l:'Fullscreen',       k:'F11',  fn:()=>toggleFullscreen()},
@@ -3287,105 +3154,138 @@ if (!localStorage.getItem('thorn_onboarded')) obShow();
 })();
 /* click outside to close settings */
 
-/* ========================================================
-   MANAGER MODE — sidebar only, real editor stays fully active
-   All writer features (find, AI, shortcuts, annotations) work
-   unchanged. Manager adds: file browser sidebar + doc CRUD.
-   ======================================================== */
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ── CONTEXT MENU ── */
+ta.addEventListener('contextmenu',function(e){
+  e.preventDefault();
+  const cm=document.getElementById('ctx-menu');
+  cm.style.left=Math.min(e.clientX,window.innerWidth-200)+'px';
+  cm.style.top=Math.min(e.clientY,window.innerHeight-300)+'px';
+  cm.classList.add('open');
+});
+document.addEventListener('click',function(){document.getElementById('ctx-menu').classList.remove('open');});
+function ctxAction(action){
+  document.getElementById('ctx-menu').classList.remove('open');
+  setTimeout(()=>{
+    if(action==='bold')wrapSel('**','**');
+    else if(action==='italic')wrapSel('*','*');
+    else if(action==='code')wrapSel('`','`');
+    else if(action==='link')ftbLink();
+    else if(action==='wiki')insertAtCaret('[[]]');
+    else if(action==='task')ftbLine('- [ ] ');
+    else if(action==='annotate')openAnnotate();
+    else if(action==='focus')toggleFocus();
+  },50);
 }
 
-function toggleManagerMode() {
-  const body = document.body;
-  const btn = document.getElementById('mode-toggle');
-  if (body.dataset.mode === 'manager') {
-    body.dataset.mode = 'writer';
-    btn.textContent = '⊞ manager';
-    btn.title = 'Switch to Manager mode (⌘⇧M)';
-    localStorage.setItem('thorn_mode', 'writer');
-  } else {
-    body.dataset.mode = 'manager';
-    btn.textContent = '✎ writer';
-    btn.title = 'Switch to Writer mode (⌘⇧M)';
-    mgrRefreshFileList();
-    localStorage.setItem('thorn_mode', 'manager');
-  }
+/* ── QUICK SWITCHER (⌘P) ── */
+let qsIdx=0, qsItems=[];
+function openQS(){
+  document.getElementById('qs-in').value='';
+  qsIdx=0;
+  qsItems=S.docs.slice().sort((a,b)=>b.updated-a.updated);
+  renderQS();
+  openMo('qs-mo');
+  setTimeout(()=>document.getElementById('qs-in').focus(),80);
 }
-
-function mgrRefreshFileList() {
-  const list = document.getElementById('mgr-file-list');
-  if (!list) return;
-  list.innerHTML = (S.docs || []).map(d => {
-    const active = d.id === S.cur ? ' active' : '';
-    const title = d.title || 'Untitled';
-    const wc = d.content ? d.content.trim().split(/\s+/).filter(Boolean).length : 0;
-    return `<div class="mgr-file${active}" onclick="mgrLoadDoc('${escHtml(d.id)}')" title="${escHtml(title)}">
-      <span style="overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1">${escHtml(title)}</span>
-      <span class="mgr-file-wc">${wc > 0 ? wc.toLocaleString() : ''}</span>
-    </div>`;
+function filterQS(){
+  const q=document.getElementById('qs-in').value.toLowerCase().trim();
+  qsItems=S.docs.filter(d=>(d.title||'').toLowerCase().includes(q)||(d.content||'').toLowerCase().includes(q)).sort((a,b)=>b.updated-a.updated);
+  qsIdx=0;
+  renderQS();
+}
+function renderQS(){
+  const el=document.getElementById('qs-list');
+  if(!qsItems.length){el.innerHTML='<div style="padding:16px;color:var(--text-tertiary);font-size:13px;font-family:var(--font-ui)">No documents found</div>';return;}
+  el.innerHTML=qsItems.slice(0,20).map((d,i)=>{
+    const wc=d.content?d.content.trim().split(/\\s+/).length:0;
+    const ago=timeAgo(d.updated);
+    return `<div class="qs-item${i===qsIdx?' sel':''}" onclick="pickQS(${i})"><span class="qs-icon">▪</span><span class="qs-title">${esc(d.title||'Untitled')}</span><span class="qs-meta">${wc}w · ${ago}</span></div>`;
   }).join('');
 }
-
-function mgrLoadDoc(id) {
-  // Use the existing openDoc function if available, else do it manually
-  if (typeof openDoc === 'function') {
-    openDoc(id);
-  } else {
-    // Manual fallback: load into real #ta
-    const doc = (S.docs || []).find(d => d.id === id);
-    if (!doc) return;
-    S.cur = id;
-    if (typeof localStorage !== 'undefined') localStorage.setItem('prose_cur', id);
-    const ta = document.getElementById('ta');
-    if (ta) {
-      ta.value = doc.content || '';
-      ta.dispatchEvent(new Event('input'));
-      ta.focus();
-    }
-  }
-  // Always refresh the sidebar to update active state
-  setTimeout(mgrRefreshFileList, 50);
+function pickQS(i){
+  const d=qsItems[i];
+  if(!d)return;
+  closeMo('qs-mo');
+  if(S.dirty)saveDoc(true);
+  loadDoc(d.id);
+}
+function qsKey(e){
+  if(e.key==='ArrowDown'){e.preventDefault();qsIdx=Math.min(qsIdx+1,qsItems.length-1);renderQS();}
+  else if(e.key==='ArrowUp'){e.preventDefault();qsIdx=Math.max(qsIdx-1,0);renderQS();}
+  else if(e.key==='Enter'){e.preventDefault();pickQS(qsIdx);}
+  else if(e.key==='Escape'){closeMo('qs-mo');}
+}
+function timeAgo(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return 'now';
+  if(s<3600)return Math.floor(s/60)+'m';
+  if(s<86400)return Math.floor(s/3600)+'h';
+  if(s<604800)return Math.floor(s/86400)+'d';
+  return Math.floor(s/604800)+'w';
 }
 
-function mgrNewDoc() {
-  // Use existing newDoc function if available
-  if (typeof newDoc === 'function') {
-    newDoc();
-  } else {
-    const id = 'doc_' + Date.now();
-    if (!S.docs) S.docs = [];
-    S.docs.unshift({id, title:'Untitled', content:'', created:Date.now(), updated:Date.now()});
-    if (typeof saveDocs === 'function') saveDocs();
-    mgrLoadDoc(id);
-  }
-  setTimeout(mgrRefreshFileList, 100);
+/* ── LOCAL DOCS IN FILE BROWSER ── */
+function renderFBLocal(){
+  const el=document.getElementById('fb-local-list');
+  if(!el)return;
+  el.innerHTML=S.docs.sort((a,b)=>b.updated-a.updated).map(d=>{
+    const active=d.id===S.cur?' active':'';
+    const wc=d.content?d.content.trim().split(/\\s+/).filter(Boolean).length:0;
+    return `<div class="file-item${active}" onclick="fbLoadLocal('${d.id}')"><span class="file-icon" style="font-size:12px;opacity:.4">▪</span><span class="file-name" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px">${esc(d.title||'Untitled')}</span><span class="file-modified" style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">${wc>0?wc+'w':''}</span></div>`;
+  }).join('');
+}
+function fbLoadLocal(id){
+  if(S.dirty)saveDoc(true);
+  loadDoc(id);
+  closeFB();
+  renderFBLocal();
 }
 
-// Listen for doc changes to keep sidebar in sync
-document.addEventListener('thorn:docchange', mgrRefreshFileList);
-// Also refresh after input (debounced) to update word counts
-let mgrRefreshTimer = null;
-document.getElementById('ta') && document.getElementById('ta').addEventListener('input', function() {
-  clearTimeout(mgrRefreshTimer);
-  mgrRefreshTimer = setTimeout(mgrRefreshFileList, 1000);
-});
+/* ── OUTLINE IN FILE BROWSER ── */
+function renderFBOutline(){
+  const el=document.getElementById('fb-outline-list');
+  if(!el)return;
+  const lines=ta.value.split('\\n');
+  const headings=[];
+  let pos=0;
+  lines.forEach((l,i)=>{
+    const m=l.match(/^(#{1,3})\\s+(.+)/);
+    if(m)headings.push({level:m[1].length,text:m[2].trim(),line:i,pos});
+    pos+=l.length+1;
+  });
+  if(!headings.length){el.innerHTML='<div style="padding:8px 16px;color:var(--text-tertiary);font-size:11px">No headings</div>';return;}
+  el.innerHTML=headings.map(h=>`<div class="ol-item ol-h${h.level}" onclick="jumpToLine(${h.line});closeFB()">${esc(h.text)}</div>`).join('');
+}
 
-// Keyboard shortcut Cmd/Ctrl+Shift+M
-document.addEventListener('keydown', function(e) {
-  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'M') {
+/* ── WRITER FOOTER SYNC ── */
+function syncFooter(){
+  const txt=ta.value;
+  const wc=txt.trim()===''?0:txt.trim().split(/\\s+/).length;
+  const wfwc=document.getElementById('wf-wc');
+  const wfrt=document.getElementById('wf-rt');
+  if(wfwc)wfwc.textContent=wc.toLocaleString()+' words';
+  if(wfrt)wfrt.textContent=wc>50?Math.ceil(wc/220)+'m read':'';
+}
+
+/* ── KEYBOARD: ⌘P for Quick Switcher ── */
+document.addEventListener('keydown',function(e){
+  if((e.metaKey||e.ctrlKey)&&e.key==='p'&&!e.shiftKey){
     e.preventDefault();
-    toggleManagerMode();
+    openQS();
   }
 });
 
-// Restore mode on load
-(function() {
-  if (localStorage.getItem('thorn_mode') === 'manager') {
-    setTimeout(function() { toggleManagerMode(); }, 300);
-  }
-})();
+/* ── HOOK INTO EXISTING EVENTS ── */
+// Update file browser local list and outline when fb opens
+const _origOpenFB=openFB;
+openFB=function(){
+  _origOpenFB();
+  renderFBLocal();
+  renderFBOutline();
+};
+// Sync footer on input
+ta.addEventListener('input',syncFooter);
+syncFooter();
 
 /* ── WIKI LINKS ── */
 function findDocByTitle(title){
