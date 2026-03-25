@@ -165,7 +165,8 @@ html{overflow-x:hidden}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
 /* annotations panel — hidden behind writer, only visible when shifted */
 #ap-trigger{display:none}
-#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui)}
+#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui);display:none}
+#ap.open{display:block}
 
 /* top hover menu — topbar style */
 #top-menu-trigger{position:fixed;top:0;left:50%;transform:translateX(-50%);width:560px;height:6px;z-index:300}
@@ -176,7 +177,8 @@ html{overflow-x:hidden}
 #top-menu .tm-sep{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
 /* settings panel — right side */
 /* settings panel — slides behind writer from right */
-#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#mo-settings.open{display:flex}
 #sp-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem .6rem;border-bottom:1px solid var(--border);flex-shrink:0}
 #sp-brand{display:flex;align-items:center;gap:.45rem}
 .sp-logo-icon{height:20px;width:auto;mix-blend-mode:multiply;opacity:.75}
@@ -232,7 +234,8 @@ html{overflow-x:hidden}
 
 /* ── FILE BROWSER (sits BEHIND writer surface) ── */
 #fb-trigger{display:none}
-#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#fb.open{display:flex}
 /* fb is always at left:0, writer slides to reveal it */
 #fb-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;height:44px}
 #fb-head span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--fg2);font-family:var(--font-ui)}
@@ -438,7 +441,8 @@ html{overflow-x:hidden}
 #menu-btn-zone:hover~#menu-btn{opacity:.6}
 
 /* ── APP MENU ── */
-#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-family:var(--font-ui)}
+#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-family:var(--font-ui)}
+#app-menu.open{display:flex}
 #app-menu-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 #app-menu-head span{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.05em;color:var(--text-primary)}
 .am-section{padding:8px 0;border-bottom:1px solid var(--border-subtle)}
@@ -2257,11 +2261,15 @@ function ftbLink(){
 let fbOpen=false, fbTree=[];
 
 function openFB(){
+  // Show file browser, shift writer right
+  document.getElementById('fb').classList.add('open');
   const ws=document.getElementById('writer-surface');
   if(ws){ws.classList.add('shifted-right');ws.classList.remove('shifted-left');}
-  // Close annotations if open
+  // Close any right-side panels
+  closeAppMenu();
   const ap=document.getElementById('ap');
   if(ap.classList.contains('open')){ap.classList.remove('open');const tb=document.getElementById('tb-annot');if(tb)tb.classList.remove('active');}
+  document.getElementById('mo-settings').classList.remove('open');
   const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.add('active');
   fbOpen=true;
   // Also check live settings fields in case user connected but hasn't clicked Save
@@ -2273,7 +2281,7 @@ function openFB(){
   else if(!fbTree.length && !liveTok) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div>';
   else if(!fbTree.length && !liveRepo) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Select a repo in Settings (⌘,), then click Save.</div>';
 }
-function closeFB(){const ws=document.getElementById('writer-surface');if(ws)ws.classList.remove('shifted-right');const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.remove('active');fbOpen=false;}
+function closeFB(){document.getElementById('fb').classList.remove('open');const ws=document.getElementById('writer-surface');if(ws)ws.classList.remove('shifted-right');const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.remove('active');fbOpen=false;}
 function toggleFB(){fbOpen?closeFB():openFB();}
 
 // Close sidebar when clicking outside
