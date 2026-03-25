@@ -20,7 +20,7 @@
   --accent:#8b6f4e;--accent-hover:#7a6145;--accent-subtle:rgba(139,111,78,0.08);--accent-text:#8b6f4e;
   --sel:rgba(139,111,78,.15);--ann:rgba(139,111,78,.12);
   --ann-ai:rgba(52,211,153,.18);--w:680px;
-  --font:Georgia,'Times New Roman',serif;
+  --font:'JetBrains Mono','iA Writer Quattro','Courier Prime',monospace;
   --font-ui:'Inter',system-ui,-apple-system,sans-serif;
   --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
   --sz:21px;--lh:1.9;--vpad:120px;
@@ -69,10 +69,12 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100vh}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(--sz);line-height:var(--lh);transition:background .2s,color .2s;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body.fb-open #col{margin-left:280px}
-body.fb-open #prev{margin-left:280px}
+/* ── WRITER SURFACE (slides to reveal panels behind) ── */
+#writer-surface{position:relative;z-index:2;background:var(--bg);min-height:100vh;transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform;box-shadow:none}
+#writer-surface.shifted-right{transform:translateX(280px);box-shadow:-4px 0 32px rgba(0,0,0,.1)}
+#writer-surface.shifted-left{transform:translateX(-300px);box-shadow:4px 0 32px rgba(0,0,0,.1)}
 /* column */
-#col{max-width:var(--w);margin:0 auto;padding:var(--vpad) 24px;position:relative;transition:margin-left .25s ease,max-width .25s ease}
+#col{max-width:var(--w);margin:0 auto;padding:var(--vpad) 24px;position:relative}
 /* textarea + overlay */
 #ta,#ov{font-family:var(--font);font-size:var(--sz);line-height:var(--lh);white-space:pre-wrap;word-wrap:break-word;word-break:break-word;width:100%;padding:0;border:none;outline:none;background:transparent;display:block;letter-spacing:0.01em}
 #ta{color:transparent;caret-color:var(--fg);resize:none;overflow:hidden;position:relative;z-index:2;min-height:calc(100vh - 240px);-webkit-font-smoothing:antialiased}
@@ -147,9 +149,9 @@ body.fb-open #prev{margin-left:280px}
 .ci-l{font-size:13px;font-family:var(--font-ui);color:var(--fg)}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
 /* annotations panel */
-#ap-trigger{position:fixed;top:0;right:0;width:18px;height:100vh;z-index:190}
-#ap{position:fixed;top:0;right:-380px;width:340px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:200;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-4px 0 24px rgba(0,0,0,.06)}
-#ap.open{right:0}
+#ap-trigger{position:fixed;top:0;right:0;width:18px;height:100vh;z-index:3}
+#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui)}
+/* ap is always at right:0, writer slides left to reveal it */
 
 /* top hover menu — topbar style */
 #top-menu-trigger{position:fixed;top:0;left:50%;transform:translateX(-50%);width:560px;height:6px;z-index:300}
@@ -214,10 +216,10 @@ body.fb-open #prev{margin-left:280px}
 ::-webkit-scrollbar-thumb{background:transparent;border-radius:2px}
 *:hover::-webkit-scrollbar-thumb{background:rgba(128,128,128,.25)}
 
-/* ── FILE BROWSER SIDEBAR (panel-left) ── */
-#fb-trigger{position:fixed;top:0;left:0;width:18px;height:100vh;z-index:190}
-#fb{position:fixed;top:0;left:-300px;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:200;display:flex;flex-direction:column;transition:left .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:4px 0 24px rgba(0,0,0,.04)}
-#fb.open{left:0}
+/* ── FILE BROWSER (sits BEHIND writer surface) ── */
+#fb-trigger{position:fixed;top:0;left:0;width:18px;height:100vh;z-index:3}
+#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+/* fb is always at left:0, writer slides to reveal it */
 #fb-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;height:44px}
 #fb-head span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--fg2);font-family:var(--font-ui)}
 #fb-close{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:var(--radius-sm);transition:color .15s,background .15s}
@@ -698,6 +700,9 @@ body.split-view #split-prev{display:block}
   <div id="mgr-file-list"></div>
 </div>
 
+<!-- Writer surface: slides to reveal panels behind it -->
+<div id="writer-surface">
+
 <div id="tab-trigger"></div>
 <div id="tab-bar" style="display:none"></div>
 <div id="gh-banner"></div>
@@ -1031,6 +1036,8 @@ body.split-view #split-prev{display:block}
   </div>
   <div id="ap-list"></div>
 </div>
+
+</div><!-- /writer-surface -->
 
 <!-- File browser trigger zone -->
 <div id="fb-trigger" onmouseenter="openFB()"></div>
@@ -2083,21 +2090,36 @@ function annJumpTo(id){
 function toggleAP(){
   const ap=document.getElementById('ap');
   const isOpen=ap.classList.toggle('open');
-  if(isOpen)renderAnnList();
+  const ws=document.getElementById('writer-surface');
+  if(isOpen){
+    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
+    if(fbOpen)closeFB();
+    renderAnnList();
+  } else {
+    if(ws)ws.classList.remove('shifted-left');
+  }
 }
 function hoverOpenAP(){
   const anns=annForDoc();
-  if(!anns.length) return; // don't open empty panel on hover
+  if(!anns.length) return;
   const ap=document.getElementById('ap');
-  ap.classList.add('open');
-  renderAnnList();
+  if(!ap.classList.contains('open')){
+    ap.classList.add('open');
+    const ws=document.getElementById('writer-surface');
+    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
+    if(fbOpen)closeFB();
+    renderAnnList();
+  }
 }
 // Close panels on outside click
 document.addEventListener('click',e=>{
   const ap=document.getElementById('ap');
   const trigger=document.getElementById('ap-trigger');
-  if(ap.classList.contains('open')&&!ap.contains(e.target)&&!trigger.contains(e.target))
+  if(ap.classList.contains('open')&&!ap.contains(e.target)&&!trigger.contains(e.target)){
     ap.classList.remove('open');
+    const ws=document.getElementById('writer-surface');
+    if(ws)ws.classList.remove('shifted-left');
+  }
   const ms=document.getElementById('mo-settings');
   if(ms.classList.contains('open')&&!ms.contains(e.target))
     ms.classList.remove('open');
@@ -2256,7 +2278,11 @@ function ftbLink(){
 let fbOpen=false, fbTree=[];
 
 function openFB(){
-  document.getElementById('fb').classList.add('open');
+  const ws=document.getElementById('writer-surface');
+  if(ws){ws.classList.add('shifted-right');ws.classList.remove('shifted-left');}
+  // Close annotations if open
+  const ap=document.getElementById('ap');
+  if(ap.classList.contains('open')){ap.classList.remove('open');}
   fbOpen=true;
   // Also check live settings fields in case user connected but hasn't clicked Save
   const liveTok=S.cfg.ghTok||(document.getElementById('s-gh-tok')&&document.getElementById('s-gh-tok').value.trim());
@@ -2267,7 +2293,7 @@ function openFB(){
   else if(!fbTree.length && !liveTok) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div>';
   else if(!fbTree.length && !liveRepo) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Select a repo in Settings (⌘,), then click Save.</div>';
 }
-function closeFB(){document.getElementById('fb').classList.remove('open');fbOpen=false;}
+function closeFB(){const ws=document.getElementById('writer-surface');if(ws)ws.classList.remove('shifted-right');fbOpen=false;}
 function toggleFB(){fbOpen?closeFB():openFB();}
 
 // Close sidebar when clicking outside
