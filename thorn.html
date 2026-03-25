@@ -1127,6 +1127,10 @@ body.split-view #split-prev{display:block}
 /* ── STATE ── */
 const S={docs:[],cur:null,dirty:false,focus:false,preview:false,dark:false,anns:{},cfg:{ghTok:'',ghRepo:'',ghPath:'',ghBranch:'main',aiEndpoint:'',aiKey:'',aiModel:'gpt-4o',aiPrompt:'You are a sharp literary editor. Give brief, specific feedback on clarity, rhythm, and precision.'},cmdIdx:0,cmdItems:[]};
 let annPending=null;
+let splitViewActive=false;
+let wacOpen=false, wacIdx=0, wacItems=[];
+let searchIdx=0, searchResults=[];
+let _blDebounce=null;
 
 const ta=document.getElementById('ta');
 const ov=document.getElementById('ov');
@@ -3291,8 +3295,6 @@ function wikiNavigate(title){
 }
 
 /* ── WIKI AUTOCOMPLETE ── */
-let wacOpen=false, wacIdx=0, wacItems=[];
-
 function checkWikiAutocomplete(){
   const pos=ta.selectionStart;
   const before=ta.value.substring(0,pos);
@@ -3393,7 +3395,6 @@ function getBacklinks(){
   });
 }
 
-let _blDebounce=null;
 function updateBacklinks(){
   clearTimeout(_blDebounce);
   _blDebounce=setTimeout(()=>{
@@ -3414,8 +3415,6 @@ function updateBacklinks(){
 }
 
 /* ── FULL-TEXT SEARCH ── */
-let searchIdx=0, searchResults=[];
-
 function openSearch(){
   document.getElementById('search-in').value='';
   document.getElementById('search-results').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:13px">Type to search across all documents…</div>';
@@ -3510,8 +3509,6 @@ function openDailyNote(){
 }
 
 /* ── SPLIT VIEW ── */
-let splitViewActive=false;
-
 function toggleSplitView(){
   splitViewActive=!splitViewActive;
   document.body.classList.toggle('split-view',splitViewActive);
