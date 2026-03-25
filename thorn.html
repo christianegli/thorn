@@ -162,10 +162,10 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 .ci:hover,.ci.sel{background:var(--accent-subtle)}
 .ci-l{font-size:13px;font-family:var(--font-ui);color:var(--fg)}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
-/* annotations panel */
-#ap-trigger{position:fixed;top:0;right:0;width:18px;height:100vh;z-index:3}
-#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui)}
-/* ap is always at right:0, writer slides left to reveal it */
+/* annotations panel — hidden behind writer, only visible when shifted */
+#ap-trigger{display:none}
+#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui);transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+#ap.open{transform:translateX(0)}
 
 /* top hover menu — topbar style */
 #top-menu-trigger{position:fixed;top:0;left:50%;transform:translateX(-50%);width:560px;height:6px;z-index:300}
@@ -175,8 +175,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 #top-menu button:hover{background:var(--accent-subtle);color:var(--accent-text)}
 #top-menu .tm-sep{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
 /* settings panel — right side */
-#mo-settings{position:fixed;top:0;right:-440px;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:202;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-8px 0 32px rgba(0,0,0,.06)}
-#mo-settings.open{right:0}
+/* settings panel — slides behind writer from right */
+#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-size:13px;font-family:var(--font-ui);transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+#mo-settings.open{transform:translateX(0)}
 #sp-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem .6rem;border-bottom:1px solid var(--border);flex-shrink:0}
 #sp-brand{display:flex;align-items:center;gap:.45rem}
 .sp-logo-icon{height:20px;width:auto;mix-blend-mode:multiply;opacity:.75}
@@ -231,7 +232,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 *:hover::-webkit-scrollbar-thumb{background:rgba(128,128,128,.25)}
 
 /* ── FILE BROWSER (sits BEHIND writer surface) ── */
-#fb-trigger{position:fixed;top:0;left:0;width:18px;height:100vh;z-index:3}
+#fb-trigger{display:none}
 #fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 /* fb is always at left:0, writer slides to reveal it */
 #fb-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;height:44px}
@@ -431,7 +432,23 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 #gh-banner{position:fixed;top:44px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1a7f4b;color:#fff;font-size:13px;font-weight:600;letter-spacing:.01em;font-family:var(--font-ui);padding:9px 22px;border-radius:var(--radius-sm);opacity:0;pointer-events:none;z-index:900;transition:opacity .3s,transform .3s;white-space:nowrap;box-shadow:var(--shadow-lg)}
 #gh-banner.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── (manager mode removed — functionality integrated into file browser) ── */
+/* ── CORNER MENU BUTTON ── */
+#menu-btn{position:fixed;top:12px;right:14px;z-index:60;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;transition:all .15s;opacity:0}
+#menu-btn:hover{opacity:1!important;background:var(--surface-hover);color:var(--text-secondary)}
+#menu-btn-zone{position:fixed;top:0;right:0;width:60px;height:52px;z-index:59}
+#menu-btn-zone:hover~#menu-btn{opacity:.6}
+
+/* ── APP MENU ── */
+#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:flex;flex-direction:column;font-family:var(--font-ui);transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+#app-menu.open{transform:translateX(0)}
+#app-menu-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+#app-menu-head span{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.05em;color:var(--text-primary)}
+.am-section{padding:8px 0;border-bottom:1px solid var(--border-subtle)}
+.am-section:last-child{border-bottom:none}
+.am-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:6px 16px 4px;font-family:var(--font-ui)}
+.am-item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text-secondary);transition:background .1s}
+.am-item:hover{background:var(--surface-hover);color:var(--text-primary)}
+.am-key{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)}
 
 /* ── CONTEXT MENU ── */
 #ctx-menu{position:fixed;z-index:900;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:4px;min-width:180px;box-shadow:var(--shadow-panel);display:none;font-family:var(--font-ui)}
@@ -535,8 +552,46 @@ body.split-view #split-prev{display:block}
 </head>
 <body data-mode="writer">
 
+<!-- App menu (behind writer) -->
+<div id="app-menu">
+  <div id="app-menu-head"><span>thorn</span><button onclick="closeAppMenu()" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;padding:4px">✕</button></div>
+  <div class="am-section">
+    <div class="am-item" onclick="amAction('new')">New Document <span class="am-key">⌘N</span></div>
+    <div class="am-item" onclick="amAction('open')">Quick Switcher <span class="am-key">⌘P</span></div>
+    <div class="am-item" onclick="amAction('daily')">Daily Note</div>
+  </div>
+  <div class="am-section">
+    <div class="am-item" onclick="amAction('save')">Save <span class="am-key">⌘S</span></div>
+    <div class="am-item" onclick="amAction('commit')">Commit to GitHub <span class="am-key">⌘⇧S</span></div>
+    <div class="am-item" onclick="amAction('pull')">Pull from GitHub <span class="am-key">⌘⇧P</span></div>
+    <div class="am-item" onclick="amAction('export')">Export <span class="am-key">⌘E</span></div>
+  </div>
+  <div class="am-section">
+    <div class="am-item" onclick="amAction('focus')">Focus Mode <span class="am-key">⌘F</span></div>
+    <div class="am-item" onclick="amAction('split')">Split View <span class="am-key">⌘\</span></div>
+    <div class="am-item" onclick="amAction('preview')">Preview</div>
+    <div class="am-item" onclick="amAction('find')">Find & Replace <span class="am-key">⌘⇧F</span></div>
+  </div>
+  <div class="am-section">
+    <div class="am-item" onclick="amAction('files')">File Browser <span class="am-key">⌘⇧B</span></div>
+    <div class="am-item" onclick="amAction('annotations')">Annotations <span class="am-key">⌘⇧I</span></div>
+    <div class="am-item" onclick="amAction('stats')">Document Stats <span class="am-key">⌘I</span></div>
+    <div class="am-item" onclick="amAction('graph')">Graph View</div>
+  </div>
+  <div class="am-section">
+    <div class="am-item" onclick="amAction('theme')">Theme</div>
+    <div class="am-item" onclick="amAction('settings')">Settings <span class="am-key">⌘,</span></div>
+  </div>
+</div>
+
 <!-- Writer surface: slides to reveal panels behind it -->
 <div id="writer-surface">
+
+<!-- Menu button (top-right corner, appears on hover) -->
+<div id="menu-btn-zone"></div>
+<button id="menu-btn" onclick="toggleAppMenu()" title="Menu">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+</button>
 
 <!-- Topbar: appears on hover, always accessible -->
 <div id="topbar-trigger" onmouseenter="document.getElementById('topbar').style.opacity='1'" onmouseleave="document.getElementById('topbar').style.opacity=''"></div>
@@ -897,25 +952,16 @@ body.split-view #split-prev{display:block}
 
 </div><!-- /writer-surface -->
 
-<!-- File browser trigger zone -->
-<div id="fb-trigger" onmouseenter="openFB()"></div>
-
-<!-- File browser sidebar -->
+<!-- File browser (behind writer) -->
 <div id="fb">
   <div id="fb-head">
     <span>Files</span>
     <div style="display:flex;gap:4px">
-      <button onclick="openNewFile()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:13px;padding:2px 7px;border-radius:4px;font-family:var(--font)" title="New file">+</button>
-      <button id="fb-close" onclick="closeFB()">✕</button>
+      <button onclick="newDoc()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:13px;padding:2px 7px;border-radius:4px;font-family:var(--font-ui)" title="New document">+</button>
     </div>
   </div>
-  <div id="fb-repo"><span id="fb-repo-label">No GitHub repo configured</span><button id="fb-reload" onclick="fbTree=[];openFB()" title="Refresh">↻</button></div>
-  <!-- Local documents -->
-  <div id="fb-local" style="border-bottom:1px solid var(--border)">
-    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:10px 16px 6px;font-family:var(--font-ui)">Local Documents</div>
-    <div id="fb-local-list"></div>
-  </div>
-  <div id="fb-tree"><div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div></div>
+  <!-- Documents list (local + GitHub unified) -->
+  <div id="fb-docs" style="flex:1;overflow-y:auto;padding:4px 0"></div>
   <!-- Live outline -->
   <div id="fb-outline">
     <div id="fb-outline-head">Outline</div>
@@ -1578,10 +1624,19 @@ ta.addEventListener('keyup',e=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    closeAllMo();closeSettings();
-    // Close panels and snap writer back
+    closeAllMo();
+    // Close all panels and snap writer back
     const ws=document.getElementById('writer-surface');
-    if(ws&&ws.classList.contains('shifted-left')){toggleAP();return;}
+    if(ws&&ws.classList.contains('shifted-left')){
+      const ap=document.getElementById('ap');
+      const ms=document.getElementById('mo-settings');
+      const am=document.getElementById('app-menu');
+      if(ap&&ap.classList.contains('open'))toggleAP();
+      if(ms&&ms.classList.contains('open'))closeSettings();
+      if(am&&am.classList.contains('open'))closeAppMenu();
+      ws.classList.remove('shifted-left');
+      return;
+    }
     if(ws&&ws.classList.contains('shifted-right')){closeFB();return;}
   }
   // Annotation keyboard nav when panel is open
@@ -1838,9 +1893,17 @@ function openSettings(tab){
   if(tabEl) tabEl.classList.add('active');
   if(panel) panel.style.display='block';
   document.getElementById('mo-settings').classList.add('open');
+  const ws=document.getElementById('writer-surface');
+  if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
+  if(fbOpen)closeFB();
+  closeAppMenu();
   if(targetTab==='theme') requestAnimationFrame(()=>renderThemeGrid('th-grid-s'));
 }
-function closeSettings(){document.getElementById('mo-settings').classList.remove('open');}
+function closeSettings(){
+  document.getElementById('mo-settings').classList.remove('open');
+  const ws=document.getElementById('writer-surface');
+  if(ws)ws.classList.remove('shifted-left');
+}
 function commitNow(){closeMo('mo-ann');syncToGH(false);}
 
 /* ── GITHUB SYNC ── */
@@ -2020,32 +2083,27 @@ function toggleAP(){
   }
 }
 function hoverOpenAP(){
-  const anns=annForDoc();
-  if(!anns.length) return;
-  const ap=document.getElementById('ap');
-  if(!ap.classList.contains('open')){
-    ap.classList.add('open');
-    const ws=document.getElementById('writer-surface');
-    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
-    if(fbOpen)closeFB();
-    renderAnnList();
-  }
+  // Disabled — annotations only open via menu/button
 }
 // Close panels: click on shifted writer surface snaps it back
 document.addEventListener('click',e=>{
   const ws=document.getElementById('writer-surface');
-  // If writer is shifted and user clicks the writer surface, close the panel
-  if(ws&&ws.classList.contains('shifted-left')&&ws.contains(e.target)){
-    toggleAP();
+  if(!ws)return;
+  // Click on shifted writer = close whatever panel is open, snap back
+  if(ws.classList.contains('shifted-left')&&ws.contains(e.target)){
+    const ap=document.getElementById('ap');
+    const ms=document.getElementById('mo-settings');
+    const am=document.getElementById('app-menu');
+    if(ap.classList.contains('open'))toggleAP();
+    if(ms.classList.contains('open'))closeSettings();
+    if(am.classList.contains('open'))closeAppMenu();
+    ws.classList.remove('shifted-left');
     return;
   }
-  if(ws&&ws.classList.contains('shifted-right')&&ws.contains(e.target)){
+  if(ws.classList.contains('shifted-right')&&ws.contains(e.target)){
     closeFB();
     return;
   }
-  const ms=document.getElementById('mo-settings');
-  if(ms.classList.contains('open')&&!ms.contains(e.target))
-    ms.classList.remove('open');
 });
 
 /* ── AI AGENT ── */
@@ -3154,6 +3212,88 @@ if (!localStorage.getItem('thorn_onboarded')) obShow();
 })();
 /* click outside to close settings */
 
+/* ── APP MENU ── */
+let appMenuOpen=false;
+function toggleAppMenu(){
+  appMenuOpen=!appMenuOpen;
+  const m=document.getElementById('app-menu');
+  const ws=document.getElementById('writer-surface');
+  if(appMenuOpen){
+    m.classList.add('open');
+    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
+    if(fbOpen)closeFB();
+  } else {
+    closeAppMenu();
+  }
+}
+function closeAppMenu(){
+  appMenuOpen=false;
+  document.getElementById('app-menu').classList.remove('open');
+  const ws=document.getElementById('writer-surface');
+  // Only remove shifted-left if no other right panel is open
+  const ap=document.getElementById('ap');
+  const ms=document.getElementById('mo-settings');
+  if(ws&&!ap.classList.contains('open')&&!ms.classList.contains('open')){
+    ws.classList.remove('shifted-left');
+  }
+}
+function amAction(action){
+  closeAppMenu();
+  const ws=document.getElementById('writer-surface');
+  if(ws)ws.classList.remove('shifted-left');
+  setTimeout(()=>{
+    switch(action){
+      case 'new':newDoc();break;
+      case 'open':openQS();break;
+      case 'daily':openDailyNote();break;
+      case 'save':saveDoc();break;
+      case 'commit':syncToGH();break;
+      case 'pull':pullFromGH();break;
+      case 'export':openExport();break;
+      case 'focus':toggleFocus();break;
+      case 'split':toggleSplitView();break;
+      case 'preview':togglePreview();break;
+      case 'find':openSearch();break;
+      case 'files':toggleFB();break;
+      case 'annotations':toggleAP();break;
+      case 'stats':toggleStats();break;
+      case 'graph':openGraph();break;
+      case 'theme':openThemePicker();break;
+      case 'settings':openSettings();break;
+    }
+  },50);
+}
+
+/* ── UNIFIED FILE BROWSER RENDER ── */
+function renderFBDocs(){
+  const el=document.getElementById('fb-docs');
+  if(!el)return;
+  let html='';
+  // All local docs sorted by recency
+  const sorted=S.docs.slice().sort((a,b)=>b.updated-a.updated);
+  sorted.forEach(d=>{
+    const active=d.id===S.cur;
+    const wc=d.content?d.content.trim().split(/\s+/).filter(Boolean).length:0;
+    const ago=timeAgo(d.updated);
+    html+=`<div class="fbi${active?' active':''}" style="padding:7px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:${active?'var(--accent-text)':'var(--text-secondary)'};transition:background .1s;position:relative${active?';background:var(--accent-subtle)':''}" onclick="fbLoadLocal('${d.id}')">`;
+    if(active) html+=`<span style="position:absolute;left:0;top:4px;bottom:4px;width:2px;background:var(--accent);border-radius:1px"></span>`;
+    html+=`<span style="font-size:12px;opacity:.4;width:16px;text-align:center">▪</span>`;
+    html+=`<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-ui)">${esc(d.title||'Untitled')}</span>`;
+    html+=`<span style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);flex-shrink:0">${ago}</span>`;
+    html+=`</div>`;
+  });
+  // GitHub files section if configured
+  if(S.cfg.ghTok&&S.cfg.ghRepo){
+    html+=`<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:12px 16px 6px;font-family:var(--font-ui);border-top:1px solid var(--border);margin-top:4px">GitHub · ${esc(S.cfg.ghRepo.split('/').pop()||'')}</div>`;
+    html+=`<div id="fb-gh-tree"></div>`;
+  }
+  el.innerHTML=html;
+  // Load GitHub tree if needed
+  if(S.cfg.ghTok&&S.cfg.ghRepo&&fbTree.length){
+    document.getElementById('fb-gh-tree').innerHTML=renderFBNode(buildFBTree(fbTree),S.cfg.ghPath||'',0);
+  }
+}
+
 /* ── CONTEXT MENU ── */
 ta.addEventListener('contextmenu',function(e){
   e.preventDefault();
@@ -3280,7 +3420,7 @@ document.addEventListener('keydown',function(e){
 const _origOpenFB=openFB;
 openFB=function(){
   _origOpenFB();
-  renderFBLocal();
+  renderFBDocs();
   renderFBOutline();
 };
 // Sync footer on input
