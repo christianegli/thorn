@@ -73,6 +73,20 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 #writer-surface{position:relative;z-index:2;background:var(--bg);min-height:100vh;transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform;box-shadow:none}
 #writer-surface.shifted-right{transform:translateX(280px);box-shadow:-4px 0 32px rgba(0,0,0,.1)}
 #writer-surface.shifted-left{transform:translateX(-300px);box-shadow:4px 0 32px rgba(0,0,0,.1)}
+
+/* ── TOPBAR (always visible, minimal) ── */
+#topbar{position:sticky;top:0;z-index:50;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--border-subtle);opacity:0;transition:opacity .2s}
+#topbar:hover,#topbar.pinned{opacity:1}
+#topbar-trigger{position:fixed;top:0;left:0;right:0;height:12px;z-index:51}
+.tb-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;transition:all .15s;font-size:15px}
+.tb-btn:hover{background:var(--surface-hover);color:var(--text-secondary)}
+.tb-btn.active{background:var(--accent-subtle);color:var(--accent-text)}
+.tb-left,.tb-right{display:flex;align-items:center;gap:8px}
+.tb-title{font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.tb-status{font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);display:flex;align-items:center;gap:6px}
+.tb-dot{width:6px;height:6px;border-radius:50%;background:#5cb85c;flex-shrink:0}
+.tb-dot.dirty{background:#fbbf24}
+.tb-dot.err{background:#f87171}
 /* column */
 #col{max-width:var(--w);margin:0 auto;padding:var(--vpad) 24px;position:relative}
 /* textarea + overlay */
@@ -703,6 +717,29 @@ body.split-view #split-prev{display:block}
 <!-- Writer surface: slides to reveal panels behind it -->
 <div id="writer-surface">
 
+<!-- Topbar: appears on hover, always accessible -->
+<div id="topbar-trigger" onmouseenter="document.getElementById('topbar').style.opacity='1'" onmouseleave="document.getElementById('topbar').style.opacity=''"></div>
+<div id="topbar">
+  <div class="tb-left">
+    <button class="tb-btn" id="tb-files" onclick="toggleFB()" title="Files (⌘⇧B)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h5l1.5 1.5H14v9H2V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="tb-title" id="tb-title">Untitled</span>
+  </div>
+  <div class="tb-right">
+    <span class="tb-status"><span class="tb-dot" id="tb-dot"></span><span id="tb-status-text">Saved</span></span>
+    <button class="tb-btn" onclick="openCmd()" title="Commands (⌘K)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="tb-btn" id="tb-annot" onclick="toggleAP()" title="Annotations (⌘⇧I)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v8H6L3 14V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tb-btn" onclick="openSettings()" title="Settings (⌘,)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 2v2m0 8v2M2 8h2m8 0h2m-1.5-4.5L11 5m-6 6-1.5 1.5m0-9L5 5m6 6 1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</div>
+
 <div id="tab-trigger"></div>
 <div id="tab-bar" style="display:none"></div>
 <div id="gh-banner"></div>
@@ -1329,6 +1366,7 @@ function loadDoc(id){
   const t=docTitle(doc.content);
   document.title=t+' · thorn';
   document.getElementById('sb-dn').textContent=t;
+  const tbt=document.getElementById('tb-title');if(tbt)tbt.textContent=t;
   autoResize(); updateOv(); updateWC();
   setTimeout(typewriterScroll,80);
   renderTabs();
@@ -1343,6 +1381,7 @@ function saveDoc(silent){
   const t=docTitle(ta.value);
   document.title=t+' · thorn';
   document.getElementById('sb-dn').textContent=t;
+  const tbt2=document.getElementById('tb-title');if(tbt2)tbt2.textContent=t;
   if(!silent)toast('Saved');
 }
 function newDoc(silent){
@@ -1672,7 +1711,13 @@ ta.addEventListener('keyup',e=>{
   }
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeAllMo();closeSettings();}
+  if(e.key==='Escape'){
+    closeAllMo();closeSettings();
+    // Close panels and snap writer back
+    const ws=document.getElementById('writer-surface');
+    if(ws&&ws.classList.contains('shifted-left')){toggleAP();return;}
+    if(ws&&ws.classList.contains('shifted-right')){closeFB();return;}
+  }
   // Annotation keyboard nav when panel is open
   const ap=document.getElementById('ap');
   if(ap.classList.contains('open')&&document.activeElement!==ta){
@@ -1712,6 +1757,11 @@ function toggleDark(){openThemePicker();}
 function dot(state){
   const el=document.getElementById('dot');
   el.className=''; el.classList.add(state);
+  // Sync topbar dot
+  const td=document.getElementById('tb-dot');
+  const ts=document.getElementById('tb-status-text');
+  if(td){td.className='tb-dot';if(state==='dirty')td.classList.add('dirty');if(state==='err')td.classList.add('err');}
+  if(ts)ts.textContent=state==='ok'?'Saved':state==='dirty'?'Unsaved':'Error';
 }
 
 /* ── TOAST ── */
@@ -2091,12 +2141,15 @@ function toggleAP(){
   const ap=document.getElementById('ap');
   const isOpen=ap.classList.toggle('open');
   const ws=document.getElementById('writer-surface');
+  const tba=document.getElementById('tb-annot');
   if(isOpen){
     if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
     if(fbOpen)closeFB();
+    if(tba)tba.classList.add('active');
     renderAnnList();
   } else {
     if(ws)ws.classList.remove('shifted-left');
+    if(tba)tba.classList.remove('active');
   }
 }
 function hoverOpenAP(){
@@ -2111,14 +2164,17 @@ function hoverOpenAP(){
     renderAnnList();
   }
 }
-// Close panels on outside click
+// Close panels: click on shifted writer surface snaps it back
 document.addEventListener('click',e=>{
-  const ap=document.getElementById('ap');
-  const trigger=document.getElementById('ap-trigger');
-  if(ap.classList.contains('open')&&!ap.contains(e.target)&&!trigger.contains(e.target)){
-    ap.classList.remove('open');
-    const ws=document.getElementById('writer-surface');
-    if(ws)ws.classList.remove('shifted-left');
+  const ws=document.getElementById('writer-surface');
+  // If writer is shifted and user clicks the writer surface, close the panel
+  if(ws&&ws.classList.contains('shifted-left')&&ws.contains(e.target)){
+    toggleAP();
+    return;
+  }
+  if(ws&&ws.classList.contains('shifted-right')&&ws.contains(e.target)){
+    closeFB();
+    return;
   }
   const ms=document.getElementById('mo-settings');
   if(ms.classList.contains('open')&&!ms.contains(e.target))
@@ -2282,7 +2338,8 @@ function openFB(){
   if(ws){ws.classList.add('shifted-right');ws.classList.remove('shifted-left');}
   // Close annotations if open
   const ap=document.getElementById('ap');
-  if(ap.classList.contains('open')){ap.classList.remove('open');}
+  if(ap.classList.contains('open')){ap.classList.remove('open');const tb=document.getElementById('tb-annot');if(tb)tb.classList.remove('active');}
+  const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.add('active');
   fbOpen=true;
   // Also check live settings fields in case user connected but hasn't clicked Save
   const liveTok=S.cfg.ghTok||(document.getElementById('s-gh-tok')&&document.getElementById('s-gh-tok').value.trim());
@@ -2293,7 +2350,7 @@ function openFB(){
   else if(!fbTree.length && !liveTok) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Configure GitHub in Settings (⌘,) to browse files.</div>';
   else if(!fbTree.length && !liveRepo) document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Select a repo in Settings (⌘,), then click Save.</div>';
 }
-function closeFB(){const ws=document.getElementById('writer-surface');if(ws)ws.classList.remove('shifted-right');fbOpen=false;}
+function closeFB(){const ws=document.getElementById('writer-surface');if(ws)ws.classList.remove('shifted-right');const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.remove('active');fbOpen=false;}
 function toggleFB(){fbOpen?closeFB():openFB();}
 
 // Close sidebar when clicking outside
