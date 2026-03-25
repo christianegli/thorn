@@ -3,128 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>thorn — The writing app I always wanted.</title>
+  <title>thorn — Write without the interface</title>
   <meta name="description" content="A minimal markdown writing app. GitHub sync. AI annotations. Eight themes. No account.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f6f1e9;
-      --warm: #f0e9de;
-      --surface: #ede5d8;
-      --border: #d9cfc1;
-      --text: #1c1810;
-      --muted: #7a6f61;
-      --faint: #c8bfa9;
-      --serif: "Playfair Display", Georgia, serif;
-      --sans: -apple-system, "SF Pro Text", system-ui, sans-serif;
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --surface-hover: #f5f5f3;
+      --surface-active: #efeeec;
+      --border: #e8e6e1;
+      --border-subtle: #f0eee9;
+      --text-primary: #1a1a18;
+      --text-secondary: #6b6965;
+      --text-tertiary: #a09d97;
+      --accent: #8b6f4e;
+      --accent-hover: #7a6145;
+      --accent-subtle: rgba(139,111,78,0.08);
+      --accent-text: #8b6f4e;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
     }
 
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--text-primary); font-family: 'Inter', -apple-system, system-ui, sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
     /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 56px; background: rgba(246,241,233,.93); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-    .nav-logo { display: flex; align-items: center; text-decoration: none; }
-    .nav-logo img { height: 18px; width: auto; mix-blend-mode: multiply; }
-    .nav-links { display: flex; align-items: center; gap: 28px; }
-    .nav-link { font-size: 14px; color: var(--muted); text-decoration: none; }
-    .nav-link:hover { color: var(--text); }
-    .nav-cta { background: var(--text); color: var(--bg); font-size: 14px; font-weight: 600; text-decoration: none; padding: 8px 20px; border-radius: 7px; transition: opacity .15s; }
-    .nav-cta:hover { opacity: .82; }
+    nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 52px; background: rgba(250,250,248,.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.08em; color: var(--text-primary); }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { font-size: 13px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: color .15s; }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-cta { background: var(--text-primary); color: var(--bg); font-size: 13px; font-weight: 500; text-decoration: none; padding: 7px 18px; border-radius: 6px; transition: opacity .15s; }
+    .nav-cta:hover { opacity: .85; }
 
     /* CONTAINER */
-    .wrap { max-width: 960px; margin: 0 auto; padding: 0 48px; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
 
     /* HERO */
-    .hero { padding: 72px 0 60px; }
-    h1 { font-family: var(--serif); font-size: clamp(44px, 6.5vw, 68px); font-weight: 700; line-height: 1.08; letter-spacing: -.4px; color: var(--text); margin-bottom: 18px; max-width: 680px; }
-    h1 em { font-style: normal; font-weight: 700; color: var(--muted); }
-    .hero-sub { font-size: 17px; color: var(--muted); line-height: 1.6; max-width: 420px; margin: 0 0 32px; }
-    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
-    .btn-main { background: var(--text); color: var(--bg); font-size: 15px; font-weight: 600; text-decoration: none; padding: 13px 32px; border-radius: 8px; transition: opacity .15s; }
-    .btn-main:hover { opacity: .82; }
-    .btn-sec { background: transparent; border: 1px solid var(--border); color: var(--text); font-size: 15px; font-weight: 600; text-decoration: none; padding: 13px 32px; border-radius: 8px; transition: border-color .15s, color .15s; }
-    .btn-sec:hover { border-color: var(--text); color: var(--text); }
-
-    .hero-kicker { font-size: 13px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
-    .hero-icon { height: 72px; width: auto; margin-bottom: 24px; mix-blend-mode: multiply; }
-    .hero .wrap { max-width: 960px; }
-
-
-    /* VIDEO BREAK */
-    .video-break { position: relative; height: 420px; overflow: hidden; }
-    .video-break video { position: absolute; top: 0; left: 0; width: 100%; height: 140%; object-fit: cover; object-position: top; will-change: transform; }
-    @media(max-width:700px){ .video-break { height: 240px; } }
+    .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 32px 60px; text-align: center; }
+    .hero-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-text); background: var(--accent-subtle); padding: 6px 14px; border-radius: 100px; margin-bottom: 48px; }
+    .hero h1 { font-family: 'Inter', -apple-system, system-ui, sans-serif; font-size: clamp(48px, 7vw, 80px); font-weight: 300; letter-spacing: -0.04em; line-height: 1.05; color: var(--text-primary); max-width: 680px; margin-bottom: 24px; }
+    .hero h1 strong { font-weight: 600; }
+    .hero-sub { font-family: Georgia, 'Times New Roman', serif; font-size: 17px; font-weight: 400; color: var(--text-secondary); max-width: 420px; line-height: 1.7; margin-bottom: 40px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 56px; }
+    .btn { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-fill { background: var(--text-primary); color: var(--bg); border-color: var(--text-primary); }
+    .btn-fill:hover { opacity: .85; }
+    .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-outline { background: none; color: var(--text-secondary); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--text-tertiary); color: var(--text-primary); }
+    .hero-keys { display: flex; gap: 24px; color: var(--text-tertiary); font-size: 13px; }
+    .hero-keys span { display: flex; align-items: center; gap: 8px; }
+    .key { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; padding: 4px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-secondary); }
 
     /* SECTION */
-    .section-kicker { font-size: 13px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
-    h2, h3 { font-family: var(--serif); }
-    h2 { font-size: clamp(36px, 5vw, 52px); font-weight: 700; line-height: 1.1; color: var(--text); margin-bottom: 32px; max-width: 560px; }
-    h3 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+    .section { padding: 120px 32px; position: relative; }
+    .section-alt { background: var(--surface); }
+    .section-inner { max-width: 1120px; margin: 0 auto; }
+    .section-header { margin-bottom: 64px; }
+    .section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent-text); margin-bottom: 12px; }
+    .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 300; letter-spacing: -0.03em; line-height: 1.15; color: var(--text-primary); margin-bottom: 12px; }
+    .section-title strong { font-weight: 600; }
+    .section-desc { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; color: var(--text-secondary); max-width: 480px; line-height: 1.7; }
 
     /* FEATURES */
-    .features { background: var(--surface); border-top: 1px solid var(--border); padding: 72px 0; }
-    .feat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 36px; }
-    .feat { }
-    .feat-icon { width: 32px; height: 32px; color: var(--text); margin-bottom: 16px; opacity: .7; }
-    .feat h3 { margin-top: 12px; }
-    .feat p { font-size: 15px; color: var(--muted); line-height: 1.6; }
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border-radius: 12px; overflow: hidden; }
+    .feat-card { background: var(--surface); padding: 36px; }
+    .feat-icon { width: 28px; height: 28px; color: var(--text-tertiary); margin-bottom: 20px; }
+    .feat-card h3 { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .feat-card p { font-family: Georgia, 'Times New Roman', serif; font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
 
-    /* SHOWCASE — THEMES */
-    .showcase-themes { padding: 72px 0; border-top: 1px solid var(--border); }
-    .showcase-themes h2 { margin-bottom: 24px; }
-    .themes-desc { font-size: 16px; color: var(--muted); margin-bottom: 32px; max-width: 480px; }
-    .theme-split { width: 100%; border-radius: 12px; box-shadow: 0 20px 40px rgba(28,24,16,.15); display: block; }
-
-    /* SHOWCASE — FOCUS */
-    .showcase-focus { padding: 72px 0; background: var(--surface); border-top: 1px solid var(--border); }
-    .showcase-focus h2 { margin-bottom: 24px; }
-    .focus-desc { font-size: 16px; color: var(--muted); margin-bottom: 32px; max-width: 480px; }
-    .focus-gif { width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 20px 40px rgba(28,24,16,.15); display: block; }
+    /* SHOWCASE */
+    .showcase-img { width: 100%; border-radius: 12px; box-shadow: var(--shadow-lg); display: block; border: 1px solid var(--border); }
 
     /* DETAILS */
-    .details { padding: 72px 0; }
-    .detail { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-bottom: 72px; }
-    .detail:last-child { margin-bottom: 0; }
+    .detail-grid { display: flex; flex-direction: column; gap: 80px; }
+    .detail { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
     .detail.flip { direction: rtl; }
     .detail.flip > * { direction: ltr; }
-    .detail-tag { font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text); opacity: .5; font-weight: 600; margin-bottom: 16px; display: block; }
-    .detail-img img { width: 100%; border-radius: 12px; box-shadow: 0 12px 44px rgba(28,24,16,.1); }
-    .detail p { font-size: 16px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+    .detail-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 16px; display: block; }
+    .detail h3 { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 12px; }
+    .detail p { font-family: Georgia, 'Times New Roman', serif; font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
+    .detail-img img { width: 100%; border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border); }
 
     /* CTA */
-    .cta { padding: 96px 0; }
-    .cta h2 { max-width: 540px; margin-bottom: 18px; }
-    .cta p { font-size: 16px; color: var(--muted); margin-bottom: 32px; max-width: 400px; }
+    .cta { padding: 120px 32px; text-align: center; }
+    .cta .section-title { margin-bottom: 16px; }
+    .cta .section-desc { margin: 0 auto 32px; text-align: center; }
+
+    /* CONTACT */
+    .contact { background: var(--surface); border-top: 1px solid var(--border); padding: 56px 0; text-align: center; }
+    .contact-title { font-size: 16px; color: var(--text-primary); margin-bottom: 8px; font-weight: 500; }
+    .contact-sub { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; }
+    .contact a { font-size: 14px; font-weight: 600; color: var(--accent-text); text-decoration: none; border-bottom: 1.5px solid var(--accent); padding-bottom: 2px; transition: opacity .15s; }
+    .contact a:hover { opacity: .7; }
 
     /* FOOTER */
-    footer { border-top: 1px solid var(--border); padding: 30px 48px; font-size: 13px; color: var(--faint); display: flex; justify-content: space-between; align-items: center; }
-    footer a { color: var(--muted); text-decoration: none; }
-    footer a:hover { color: var(--text); }
+    footer { padding: 80px 32px; text-align: center; background: var(--text-primary); }
+    .footer-word { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    footer p { font-size: 14px; color: var(--text-tertiary); line-height: 1.7; }
+    footer .footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 20px; }
+    footer a { font-size: 13px; color: var(--text-tertiary); text-decoration: none; transition: color .15s; }
+    footer a:hover { color: var(--accent); }
 
     @media (max-width: 720px) {
       .wrap { padding: 0 20px; }
-      nav, footer { padding-left: 20px; padding-right: 20px; }
-      .feat-row { grid-template-columns: 1fr; gap: 28px; }
-      .detail, .dark-strip .wrap { grid-template-columns: 1fr; gap: 32px; }
+      nav { padding-left: 20px; padding-right: 20px; }
+      .hero { min-height: auto; padding: 56px 20px 40px; }
+      .hero h1 { font-size: 36px; }
+      .hero-keys { flex-direction: column; gap: 12px; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .detail { grid-template-columns: 1fr; gap: 32px; }
       .detail.flip { direction: ltr; }
-      h1 { font-size: 36px; }
-      .hero { padding: 48px 0 40px; }
-
-      .hero-img { grid-column: 1; display: none; }
-      .hero-icon { height: 52px !important; }
-      .focus-gif { max-width: 100%; }
+      .section { padding: 72px 20px; }
+      .cta { padding: 72px 20px; }
+      footer { padding: 56px 20px; }
     }
   </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="#"><img src="media/logo-wordmark.jpg" alt="thorn"></a>
+  <a class="nav-logo" href="#">thorn</a>
   <div class="nav-links">
     <a class="nav-link" href="#features">Features</a>
     <a class="nav-link" href="#showcase">Showcase</a>
@@ -134,167 +141,164 @@
   </div>
 </nav>
 
-<div class="hero">
-  <div class="wrap">
-    <div class="hero-content">
-      <img class="hero-icon" src="media/logo-icon.jpg" alt="">
-      <h1>The writing app I always wanted.</h1>
-      <p class="hero-sub">Beautiful minimal writing. GitHub sync. Eight themes. Command palette. Focus mode. AI annotations. No account, no tracking, no bullshit.</p>
-      <div class="hero-btns">
-        <a class="btn-main" href="/thorn.html">Start Writing</a>
-        <a class="btn-sec" href="https://github.com/christianegli/thorn">View on GitHub</a>
-      </div>
-    </div>
-
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Writing App</div>
+  <h1>Write without<br><strong>the interface</strong></h1>
+  <p class="hero-sub">A minimal markdown editor with GitHub sync, AI annotations, eight themes, and a command palette. No account, no tracking.</p>
+  <div class="hero-btns">
+    <a class="btn btn-fill" href="/thorn.html">Start Writing</a>
+    <a class="btn btn-outline" href="https://github.com/christianegli/thorn">View on GitHub</a>
   </div>
-</div>
+  <div class="hero-keys">
+    <span><span class="key">&#8984;K</span> Commands</span>
+    <span><span class="key">&#8984;1</span> Files</span>
+    <span><span class="key">&#8984;&#8679;F</span> Focus</span>
+  </div>
+</section>
 
-
-<!-- VIDEO BREAK -->
-<div class="video-break">
-  <video autoplay muted loop playsinline>
-    <source src="media/thorn-walkthrough.mp4" type="video/mp4">
-  </video>
+<!-- EDITOR SHOWCASE -->
+<div style="max-width:1120px;margin:0 auto;padding:0 32px;">
+  <img class="showcase-img" src="media/feat-editor.png" alt="thorn editor in action">
 </div>
 
 <!-- FEATURES -->
-<div class="features" id="features" style="background: var(--surface); border-top: 1px solid var(--border);">
-  <div class="wrap">
-    <div class="section-kicker">Features</div>
-    <h2>Built for writers.</h2>
-    <div class="feat-row">
-      <div class="feat">
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <h2 class="section-title">Built for <strong>writers</strong></h2>
+      <p class="section-desc">Every feature serves the writing. Nothing decorative, nothing in the way.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
         <h3>Markdown native</h3>
         <p>Write in plain Markdown. Preview renders inline. No toolbar, no clutter.</p>
       </div>
-      <div class="feat">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 12h1m16 0h1M12 3v1m0 16v1m-6.36-3.64.7-.7m11.32-11.32.7-.7M5.64 5.64l.7.7m11.32 11.32.7.7"/></svg></div>
         <h3>Eight themes</h3>
         <p>Paper, sepia, dark, midnight, forest, ember, ice. One click, any hour.</p>
       </div>
-      <div class="feat">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 000 6h-1l-5 9H9a3 3 0 000 6"/><path d="M6 3a3 3 0 000 6h1l5 9h3a3 3 0 000 6"/></svg></div>
         <h3>Command palette</h3>
         <p>Every action one keystroke away. Keyboard-first, always instant.</p>
       </div>
-      <div class="feat">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg></div>
         <h3>GitHub sync</h3>
         <p>Save directly to any repo. Versioned, backed up, always yours.</p>
       </div>
-      <div class="feat">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
         <h3>AI annotations</h3>
         <p>Inline reviews and suggestions. Bring your own key — nothing leaves your browser.</p>
       </div>
-      <div class="feat">
+      <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg></div>
         <h3>Focus mode</h3>
         <p>Everything stripped away. Just you, the text, and the cursor.</p>
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- SHOWCASE: THEMES -->
-<div class="showcase-themes" id="showcase">
-  <div class="wrap">
-    <div class="section-kicker">Themes</div>
-    <h2>Light or dark. Always yours.</h2>
-    <p class="themes-desc">Eight carefully crafted themes. Paper, sepia, dark, midnight, forest, ember, ice. One click to switch — your preference saved instantly.</p>
-    <img class="theme-split" src="media/thorn-split-paper-midnight.png" alt="Paper light theme and Midnight dark theme side-by-side">
+<section class="section section-alt" id="showcase">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <h2 class="section-title">Light or dark. <strong>Always yours</strong></h2>
+      <p class="section-desc">Eight carefully crafted themes. Paper, sepia, dark, midnight, forest, ember, ice. One click to switch — your preference saved instantly.</p>
+    </div>
+    <img class="showcase-img" src="media/feat-themes.png" alt="Light and dark themes side-by-side">
   </div>
-</div>
+</section>
 
 <!-- SHOWCASE: FOCUS MODE -->
-<div class="showcase-focus">
-  <div class="wrap">
-    <div class="section-kicker">Focus Mode</div>
-    <h2>Just the text. Nothing else.</h2>
-    <p class="focus-desc">Dim everything above and below your active paragraph. The cursor becomes the only focal point. Distractions vanish. Clarity returns.</p>
-    <img class="focus-gif" src="media/thorn-focus-looping.gif" alt="Focus mode animation showing text dimming around active paragraph">
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <h2 class="section-title">Just the text. <strong>Nothing else</strong></h2>
+      <p class="section-desc">Dim everything above and below your active paragraph. The cursor becomes the only focal point. Distractions vanish.</p>
+    </div>
+    <img class="showcase-img" src="media/feat-focus.png" alt="Focus mode showing dimmed surrounding text">
   </div>
-</div>
+</section>
 
 <!-- DETAILS -->
-<div class="details">
-  <div class="wrap">
-    <div class="detail">
-      <div>
-        <span class="detail-tag">Left Sidebar</span>
-        <h3>All your writing, one place.</h3>
-        <p>Browse, switch, and organize files in the left panel. Every document synced to GitHub. Folders, files, nothing gets lost.</p>
-      </div>
-      <div class="detail-img"><img src="media/02-filebrowser.png" alt="File browser"></div>
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <h2 class="section-title">Quiet <strong>parts</strong></h2>
+      <p class="section-desc">Every panel appears when called, vanishes when dismissed. The writing stays.</p>
     </div>
-    <div class="detail flip">
-      <div>
-        <span class="detail-tag">Right Sidebar — Annotations</span>
-        <h3>A second opinion, right there.</h3>
-        <p>Highlight any passage. Get an AI annotation — style, structure, argument, overall read. Bring your own API key. Nothing leaves your browser.</p>
+    <div class="detail-grid">
+      <div class="detail">
+        <div>
+          <span class="detail-tag">File Browser</span>
+          <h3>All your writing, one place.</h3>
+          <p>Browse, switch, and organize files in the left panel. Every document synced to GitHub. Nothing gets lost.</p>
+        </div>
+        <div class="detail-img"><img src="media/feat-editor.png" alt="File browser"></div>
       </div>
-      <div class="detail-img"><img src="media/03-annotations.png" alt="Annotations"></div>
-    </div>
-    <div class="detail">
-      <div>
-        <span class="detail-tag">Command Palette</span>
-        <h3>One keystroke to everything.</h3>
-        <p>Open files, switch themes, toggle focus, change font size, run any command. Searchable, instant, keyboard-first.</p>
+      <div class="detail flip">
+        <div>
+          <span class="detail-tag">Annotations</span>
+          <h3>A second opinion, right there.</h3>
+          <p>Highlight any passage. Get an AI annotation — style, structure, argument, overall read. Bring your own API key.</p>
+        </div>
+        <div class="detail-img"><img src="media/feat-annotations.png" alt="Annotations"></div>
       </div>
-      <div class="detail-img"><img src="media/06-cmdpalette.png" alt="Command palette"></div>
-    </div>
-    <div class="detail flip">
-      <div>
-        <span class="detail-tag">Settings</span>
-        <h3>Your way, always.</h3>
-        <p>Font size, line height, serif or sans. UI density, dark mode toggle, GitHub sync settings. Every preference persists across sessions.</p>
+      <div class="detail">
+        <div>
+          <span class="detail-tag">Command Palette</span>
+          <h3>One keystroke to everything.</h3>
+          <p>Open files, switch themes, toggle focus, change font size, run any command. Searchable, instant, keyboard-first.</p>
+        </div>
+        <div class="detail-img"><img src="media/feat-cmdpalette.png" alt="Command palette"></div>
       </div>
-      <div class="detail-img"><img src="media/07-settings.png" alt="Settings panel"></div>
+      <div class="detail flip">
+        <div>
+          <span class="detail-tag">Settings</span>
+          <h3>Your way, always.</h3>
+          <p>Font size, line height, serif or sans. UI density, dark mode toggle, GitHub sync settings. Every preference persists.</p>
+        </div>
+        <div class="detail-img"><img src="media/feat-dark.png" alt="Dark theme settings"></div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- CTA -->
 <div class="cta">
-  <div class="wrap">
-    <h2>Ready to write?</h2>
-    <p>Open thorn. No sign-up. No tracking. Start typing.</p>
-    <a class="btn-main" href="/thorn.html">Start Now</a>
+  <h2 class="section-title">Ready to <strong>write</strong>?</h2>
+  <p class="section-desc">Open thorn. No sign-up. No tracking. Start typing.</p>
+  <a class="btn btn-accent" href="/thorn.html">Start Now</a>
+</div>
+
+<!-- CONTACT -->
+<div class="contact">
+  <div class="wrap" style="max-width: 540px;">
+    <p class="contact-title">Questions, feedback, or ideas?</p>
+    <p class="contact-sub">Always happy to hear from writers.</p>
+    <a href="https://x.com/christianegli">@christianegli on X &rarr;</a>
   </div>
 </div>
 
-<div style="background: var(--surface); border-top: 1px solid var(--border); padding: 48px 0; text-align: center;">
-  <div class="wrap" style="max-width: 540px; margin: 0 auto;">
-    <p style="font-size: 17px; color: var(--text); margin-bottom: 8px; font-weight: 500;">Questions, feedback, or ideas?</p>
-    <p style="font-size: 15px; color: var(--muted); margin-bottom: 20px;">Feel free to reach out — always happy to hear from writers.</p>
-    <a href="https://x.com/christianegli" style="font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none; border-bottom: 1.5px solid var(--text); padding-bottom: 2px;">@christianegli on X →</a>
-  </div>
-</div>
+<!-- FOOTER -->
 <footer>
-  <div>© 2026 thorn. <a href="https://github.com/christianegli/thorn">Open source</a>.</div>
-  <div style="display: flex; gap: 24px;">
+  <div class="footer-word">thorn</div>
+  <p>Designed for the space between thought and word.</p>
+  <div class="footer-links">
     <a href="https://github.com/christianegli/thorn">GitHub</a>
-    <a href="https://x.com/christianegli">@christianegli on X</a>
+    <a href="https://x.com/christianegli">@christianegli</a>
   </div>
 </footer>
 
-<script>
-(function(){
-  var vb = document.querySelector('.video-break');
-  if(!vb) return;
-  var vid = vb.querySelector('video');
-  vid.addEventListener('loadedmetadata', function(){ vid.currentTime = 2; });
-  function onScroll(){
-    var rect = vb.getBoundingClientRect();
-    var center = rect.top + rect.height/2;
-    var vp = window.innerHeight/2;
-    var offset = (center - vp) * 0.2;
-    vid.style.transform = 'translateY('+offset+'px)';
-  }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-})();
-</script>
 </body>
 </html>
