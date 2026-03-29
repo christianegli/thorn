@@ -1255,6 +1255,7 @@ function saveSettings(){
   closeSettings();
   scheduleAutoCommit();
   toast('Settings saved');
+  triggerRepoSync();
 }
 
 /* ── DOCS ── */
@@ -2431,20 +2432,35 @@ function toggleFBDir(el){
 }
 async function fbOpenFile(path){
   if(!S.cfg.ghTok||!S.cfg.ghRepo)return;
+  closeFB();
+  const name=path.split('/').pop().replace(/\.[^.]+$/,'');
+  // Check if this file is already open as a tab
+  const existingDoc=S.docs.find(d=>d._ghPath===path);
+  if(existingDoc){
+    if(S.dirty)saveDoc(true);
+    loadDoc(existingDoc.id);
+    S.cfg.ghPath=path;
+    localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));
+    toast(name);
+    return;
+  }
+  // Open as a new tab
+  if(S.dirty)saveDoc(true);
+  const id='doc_'+Date.now();
+  const cached=ghCacheGet(path);
+  const content=cached?cached.content:'';
+  S.docs.push({id,title:name,content,created:Date.now(),updated:Date.now(),_ghPath:path});
+  saveDocs();
   S.cfg.ghPath=path;
   localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));
-  closeFB();
-  const name=path.split('/').pop();
-  // Try loading from local cache first (instant), then sync in background
-  const cached=ghCacheGet(path);
+  loadDoc(id);
+  renderTabs();
   if(cached){
-    ta.value=cached.content; ta.dispatchEvent(new Event('input'));
-    saveDoc(true); dot(cached.dirty?'dirty':'ok');
-    toast(cached.dirty?name+' (local changes)':name);
-    // Try to pull latest in background if online
+    dot(cached.dirty?'dirty':'ok');
+    // Sync latest in background
     if(navigator.onLine) pullFromGH().catch(()=>{});
   } else {
-    toast('Opening '+name+'…');
+    toast('Downloading '+name+'…');
     await pullFromGH();
   }
 }
@@ -3974,15 +3990,39 @@ function loadCachedFBTree(){
 }
 
 /* ── CACHE FULL REPO ── */
+let _cacheInProgress=false;
 async function cacheFullRepo(){
+  if(_cacheInProgress){toast('Already caching…');return;}
   if(!S.cfg.ghTok||!S.cfg.ghRepo){toast('Configure GitHub first');return;}
-  // Load tree if not loaded
-  if(!fbTree.length) await loadFBTree();
-  if(!fbTree.length){toast('No files to cache');return;}
+  _cacheInProgress=true;
+  // Load tree first
+  if(!fbTree.length){
+    const branch=S.cfg.ghBranch||'main';
+    try{
+      const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/git/trees/${branch}?recursive=1`,{
+        headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}
+      });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const data=await r.json();
+      fbTree=data.tree.filter(f=>f.type==='blob'&&/\.(md|txt|markdown)$/i.test(f.path));
+      cacheFBTree();
+    }catch(e){
+      toast('Failed to load file tree: '+e.message);
+      _cacheInProgress=false;return;
+    }
+  }
+  if(!fbTree.length){toast('No .md files found');_cacheInProgress=false;return;}
   const total=fbTree.length;
-  let cached=0,failed=0;
-  toast('Caching '+total+' files…');
+  let cached=0,failed=0,skipped=0;
+  const existing=ghCacheLoad();
+  // Show progress bar in toast
+  toast('Syncing repo: 0/'+total);
   for(const f of fbTree){
+    // Skip files already cached with same SHA
+    if(existing[f.path]&&existing[f.path].sha===f.sha&&!existing[f.path].dirty){
+      skipped++;cached++;
+      continue;
+    }
     try{
       const url=`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${f.path}?ref=${S.cfg.ghBranch||'main'}`;
       const r=await fetch(url,{headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}});
@@ -3991,32 +4031,28 @@ async function cacheFullRepo(){
       const content=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
       ghCachePut(f.path,content,d.sha);
       cached++;
-      // Progress toast every 5 files
-      if(cached%5===0) toast('Cached '+cached+'/'+total+'…');
-    }catch(e){failed++;}
+      toast('Syncing repo: '+cached+'/'+total);
+    }catch(e){failed++;toast('Syncing repo: '+cached+'/'+total+' ('+failed+' errors)');}
   }
-  toast('Cached '+cached+' files'+(failed?' ('+failed+' failed)':''));
+  _cacheInProgress=false;
+  const downloaded=cached-skipped;
+  let msg='Repo synced: '+cached+' files';
+  if(downloaded>0) msg+=' ('+downloaded+' downloaded)';
+  if(skipped>0) msg+=' ('+skipped+' already cached)';
+  if(failed>0) msg+=' — '+failed+' failed';
+  toast(msg);
+  dot(failed?'err':'ok');
+  renderFBDocs();
 }
 
-// Auto-cache on first GitHub connect
-let _autoCached=false;
-function maybeAutoCache(){
-  if(_autoCached)return;
+// Auto-sync repo when GitHub is configured
+function triggerRepoSync(){
   if(!S.cfg.ghTok||!S.cfg.ghRepo)return;
-  _autoCached=true;
-  // Check if we already have cached files
-  const cache=ghCacheLoad();
-  const cachedCount=Object.keys(cache).length;
-  if(cachedCount<3){
-    // Few or no cached files — cache the repo
-    setTimeout(()=>{
-      toast('Caching repo for offline use…');
-      cacheFullRepo();
-    },2000);
-  }
+  if(_cacheInProgress)return;
+  setTimeout(cacheFullRepo,1500);
 }
-// Run after init
-setTimeout(maybeAutoCache,3000);
+// Run on page load if GitHub configured
+setTimeout(triggerRepoSync,2000);
 
 /* ── FIND BAR (existing) — add search shortcut ── */
 
