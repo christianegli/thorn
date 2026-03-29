@@ -170,9 +170,10 @@ html{overflow-x:hidden}
 #ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:300;font-size:13px;font-family:var(--font-ui);display:none}
 #ap.open{display:block}
 
-/* top hover menu — hidden (replaced by topbar) */
+/* formatting toolbar — below topbar, shown on topbar hover */
 #top-menu-trigger{display:none}
-#top-menu{display:none!important}
+#top-menu{position:fixed;top:44px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--radius-md) var(--radius-md);z-index:499;display:flex;align-items:center;gap:1px;padding:0 14px;height:40px;box-shadow:var(--shadow-md);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border-top:none}
+#top-menu.open{opacity:1;pointer-events:auto}
 /* settings panel — right side */
 /* settings panel — slides behind writer from right */
 #mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
@@ -3250,14 +3251,17 @@ obDots.forEach((d, i) => d.addEventListener('click', () => obGoto(i)));
 // Show on first run
 if (!localStorage.getItem('thorn_onboarded')) obShow();
 
-/* top hover menu */
+/* formatting toolbar — show on topbar hover */
 (function(){
-  var trigger=document.getElementById('top-menu-trigger');
+  var topbar=document.getElementById('topbar');
   var menu=document.getElementById('top-menu');
   var leaveTimer=null;
   function show(){clearTimeout(leaveTimer);menu.classList.add('open');}
-  function hide(){leaveTimer=setTimeout(function(){menu.classList.remove('open');},500);}
-  trigger.addEventListener('mouseenter',show);
+  function hide(){leaveTimer=setTimeout(function(){menu.classList.remove('open');},400);}
+  if(topbar){
+    topbar.addEventListener('mouseenter',show);
+    topbar.addEventListener('mouseleave',hide);
+  }
   menu.addEventListener('mouseenter',show);
   menu.addEventListener('mouseleave',hide);
 })();
