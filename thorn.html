@@ -167,7 +167,7 @@ html{overflow-x:hidden}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
 /* annotations panel — hidden behind writer, only visible when shifted */
 #ap-trigger{display:none}
-#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:1;font-size:13px;font-family:var(--font-ui);display:none}
+#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:300;font-size:13px;font-family:var(--font-ui);display:none}
 #ap.open{display:block}
 
 /* top hover menu — hidden (replaced by topbar) */
@@ -175,7 +175,7 @@ html{overflow-x:hidden}
 #top-menu{display:none!important}
 /* settings panel — right side */
 /* settings panel — slides behind writer from right */
-#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 #mo-settings.open{display:flex}
 #sp-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem .6rem;border-bottom:1px solid var(--border);flex-shrink:0}
 #sp-brand{display:flex;align-items:center;gap:.45rem}
@@ -232,7 +232,7 @@ html{overflow-x:hidden}
 
 /* ── FILE BROWSER (sits BEHIND writer surface) ── */
 #fb-trigger{display:none}
-#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 #fb.open{display:flex}
 /* fb is always at left:0, writer slides to reveal it */
 #fb-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;flex-shrink:0}
@@ -439,7 +439,7 @@ html{overflow-x:hidden}
 #menu-btn-zone{display:none}
 
 /* ── APP MENU ── */
-#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-family:var(--font-ui)}
+#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-family:var(--font-ui)}
 #app-menu.open{display:flex}
 #app-menu-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 #app-menu-head span{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.05em;color:var(--text-primary)}
