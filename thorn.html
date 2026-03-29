@@ -252,7 +252,14 @@ html{overflow-x:hidden}
 .fbi-date{font-size:10px;color:var(--fg3);flex-shrink:0;font-family:var(--font-mono)}
 .fbi-dir{font-weight:600;color:var(--fg2);font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:12px 16px 6px;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none;font-family:var(--font-ui)}
 .fbi-dir:hover{color:var(--fg)}
-.fbi-dir-arrow{font-size:9px;color:var(--fg3);transition:transform .15s;flex-shrink:0}
+/* ── DRAG & DROP IN FILE BROWSER ── */
+.fbi[draggable=true]{cursor:grab}
+.fbi[draggable=true]:active{cursor:grabbing;opacity:.6}
+.fbi.drag-over{border-top:2px solid var(--accent);margin-top:-2px}
+.fbi-dir.drag-over{background:var(--accent-subtle);border-radius:4px}
+.fbi-dir .fbi-dir-add{opacity:0;margin-left:4px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:14px;padding:0 4px;border-radius:4px;font-family:var(--font-ui);transition:opacity .15s,color .15s;flex-shrink:0}
+.fbi-dir:hover .fbi-dir-add{opacity:1}
+.fbi-dir .fbi-dir-add:hover{color:var(--accent-text)}
 .fbi-dir.collapsed .fbi-dir-arrow{transform:rotate(-90deg)}
 .fbi-group{overflow:hidden;transition:max-height .18s ease}
 .fbi-group.collapsed{max-height:0!important}
@@ -2361,31 +2368,34 @@ function renderFBTree(){
 function renderFBNode(node, active, depth){
   let html='';
   const baseIndent=16+depth*14;
-  // Files at this level first
+  // Files at this level
   node.files.sort((a,b)=>a.path.localeCompare(b.path)).forEach(f=>{
     const name=f.path.split('/').pop();
     html+=`<div class="fbi${f.path===active?' active':''}" style="padding-left:${baseIndent}px"
+      draggable="true" data-path="${esc(f.path)}"
+      ondragstart="fbDragStart(event)" ondragover="fbDragOver(event)" ondragleave="fbDragLeave(event)" ondrop="fbDrop(event)"
       onclick="fbOpenFile('${esc(f.path)}')" title="${esc(f.path)}">
       <span class="fbi-icon" style="opacity:.45;font-size:11px">▪</span>
       <span class="fbi-name">${esc(name)}</span>
     </div>`;
   });
-  // Then subdirectories, sorted
+  // Subdirectories
   Object.values(node.children).sort((a,b)=>a.name.localeCompare(b.name)).forEach(child=>{
     const key=child.path;
-    // top-level open by default, deeper collapsed
     if(fbCollapsed[key]===undefined) fbCollapsed[key]=(depth>=1);
     const isColl=fbCollapsed[key];
     const gid='fbg-'+(++_fbGid);
     const count=countFBFiles(child);
     html+=`<div class="fbi fbi-dir${isColl?' collapsed':''}" data-dir="${esc(key)}" data-gid="${gid}"
-      style="padding-left:${baseIndent-6}px" onclick="toggleFBDir(this)">
+      style="padding-left:${baseIndent-6}px"
+      ondragover="fbDirDragOver(event)" ondragleave="fbDragLeave(event)" ondrop="fbDirDrop(event,'${esc(key)}')"
+      onclick="toggleFBDir(this)">
       <span class="fbi-dir-arrow">▾</span>
       <span>${esc(child.name)}</span>
       <span style="margin-left:auto;color:var(--fg3);font-size:10px;font-weight:400;letter-spacing:0">${count}</span>
+      <button class="fbi-dir-add" onclick="event.stopPropagation();fbNewFileInFolder('${esc(key)}')" title="New file in ${esc(child.name)}">+</button>
     </div>`;
     const inner=renderFBNode(child,active,depth+1);
-    // generous max-height estimate
     const estH=count*32+(Object.keys(child.children).length*34)+20;
     html+=`<div class="fbi-group${isColl?' collapsed':''}" id="${gid}"
       style="max-height:${isColl?0:estH}px">${inner}</div>`;
@@ -2464,6 +2474,116 @@ async function fbOpenFile(path){
     toast('Downloading '+name+'…');
     await pullFromGH();
   }
+}
+
+/* ── DRAG & DROP FILES ── */
+let _fbDragPath=null;
+function fbDragStart(e){
+  _fbDragPath=e.currentTarget.dataset.path;
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',_fbDragPath);
+  e.currentTarget.style.opacity='.4';
+  setTimeout(()=>{if(e.currentTarget)e.currentTarget.style.opacity='';},200);
+}
+function fbDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('drag-over');
+}
+function fbDirDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('drag-over');
+}
+function fbDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+function fbDrop(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const targetPath=e.currentTarget.dataset.path;
+  if(!_fbDragPath||_fbDragPath===targetPath)return;
+  // Move file: get target's folder
+  const targetFolder=targetPath.substring(0,targetPath.lastIndexOf('/'));
+  fbMoveFile(_fbDragPath,targetFolder);
+  _fbDragPath=null;
+}
+function fbDirDrop(e,folderPath){
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('drag-over');
+  if(!_fbDragPath)return;
+  fbMoveFile(_fbDragPath,folderPath);
+  _fbDragPath=null;
+}
+async function fbMoveFile(fromPath,toFolder){
+  if(!S.cfg.ghTok||!S.cfg.ghRepo)return;
+  const name=fromPath.split('/').pop();
+  const newPath=toFolder?toFolder+'/'+name:name;
+  if(fromPath===newPath)return;
+  toast('Moving '+name+'…');
+  try{
+    // Read old file
+    const url=`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${fromPath}?ref=${S.cfg.ghBranch||'main'}`;
+    const r=await fetch(url,{headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}});
+    if(!r.ok){toast('Move failed: could not read file');return;}
+    const d=await r.json();
+    // Create at new path
+    const createR=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${newPath}`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:'Move '+fromPath+' → '+newPath,content:d.content,branch:S.cfg.ghBranch||'main'})
+    });
+    if(!createR.ok){toast('Move failed: could not create file');return;}
+    // Delete old file
+    const delR=await fetch(url,{
+      method:'DELETE',
+      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:'Move '+fromPath+' (delete old)',sha:d.sha,branch:S.cfg.ghBranch||'main'})
+    });
+    if(!delR.ok){toast('Warning: old file not deleted');}
+    // Update local cache
+    const cached=ghCacheGet(fromPath);
+    if(cached){
+      const cache=ghCacheLoad();
+      delete cache[fromPath];
+      ghCacheSave(cache);
+      ghCachePut(newPath,cached.content,null);
+    }
+    // Update config if this was the active file
+    if(S.cfg.ghPath===fromPath){S.cfg.ghPath=newPath;localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));}
+    // Refresh tree
+    fbTree=[];await loadFBTree();
+    toast('Moved to '+newPath);
+  }catch(e){toast('Move error: '+e.message);}
+}
+
+/* ── NEW FILE IN FOLDER ── */
+function fbNewFileInFolder(folder){
+  const name=prompt('File name:','untitled.md');
+  if(!name)return;
+  const fileName=name.includes('.')?name:name+'.md';
+  const path=folder+'/'+fileName;
+  fbCreateFile(path);
+}
+async function fbCreateFile(path){
+  if(!S.cfg.ghTok||!S.cfg.ghRepo){toast('Configure GitHub first');return;}
+  if(fbTree.find(f=>f.path===path)){toast('File already exists');return;}
+  toast('Creating '+path.split('/').pop()+'…');
+  try{
+    const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${path}`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:'Create '+path,content:btoa(''),branch:S.cfg.ghBranch||'main'})
+    });
+    if(!r.ok){const e=await r.json();toast('Error: '+(e.message||r.status));return;}
+    ghCachePut(path,'',null);
+    if(!fbTree.find(f=>f.path===path)) fbTree.push({path,type:'blob',sha:null});
+    cacheFBTree();
+    renderFBDocs();
+    toast('Created '+path.split('/').pop());
+    fbOpenFile(path);
+  }catch(e){toast('Error: '+e.message);}
 }
 
 /* ── NEW FILE ── */
