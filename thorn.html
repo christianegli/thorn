@@ -411,7 +411,7 @@ html{overflow-x:hidden}
 /* tabs */
 /* tabs — sits above topbar, pushes content down when visible */
 #tab-bar{position:relative;height:36px;z-index:55;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border-subtle);padding:0 12px;gap:0;opacity:0;transform:translateY(-100%);transition:transform .2s ease,opacity .2s ease;margin-bottom:-36px}
-#tab-trigger{position:fixed;top:0;left:0;width:100%;height:8px;z-index:56}
+#tab-trigger{display:none}
 #tab-bar.tab-visible{transform:translateY(0);opacity:1;margin-bottom:0}
 #tab-bar::-webkit-scrollbar{display:none}
 .t-tab{display:flex;align-items:center;gap:6px;padding:0 10px 0 12px;min-width:80px;max-width:160px;height:100%;font-size:11.5px;font-family:var(--font-ui);color:var(--fg2);cursor:pointer;white-space:nowrap;border-right:1px solid var(--border-subtle);transition:background .1s,color .1s;flex-shrink:0;user-select:none}
@@ -1156,21 +1156,21 @@ function renderTabs(){
   const active=bar.querySelector('.t-tab.active');
   if(active)active.scrollIntoView({block:'nearest',inline:'nearest'});
 }
-// Tab bar auto-hide: show on hover over top-left trigger
+// Tab bar auto-hide: show on hover over topbar or tab bar itself
 (function(){
   var bar=document.getElementById('tab-bar');
-  var trigger=document.getElementById('tab-trigger');
+  var topbar=document.getElementById('topbar');
   var hideTimer=null;
   function showTabs(){
     clearTimeout(hideTimer);
     if(bar.style.display!=='none') bar.classList.add('tab-visible');
   }
   function hideTabs(){
-    hideTimer=setTimeout(function(){ bar.classList.remove('tab-visible'); }, 300);
+    hideTimer=setTimeout(function(){ bar.classList.remove('tab-visible'); }, 400);
   }
-  if(trigger){
-    trigger.addEventListener('mouseenter',showTabs);
-    trigger.addEventListener('mouseleave',hideTabs);
+  if(topbar){
+    topbar.addEventListener('mouseenter',showTabs);
+    topbar.addEventListener('mouseleave',hideTabs);
   }
   bar.addEventListener('mouseenter',showTabs);
   bar.addEventListener('mouseleave',hideTabs);
