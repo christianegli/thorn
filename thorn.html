@@ -2517,45 +2517,49 @@ function fbDirDrop(e,folderPath){
   _fbDragPath=null;
 }
 async function fbMoveFile(fromPath,toFolder){
-  if(!S.cfg.ghTok||!S.cfg.ghRepo)return;
   const name=fromPath.split('/').pop();
   const newPath=toFolder?toFolder+'/'+name:name;
   if(fromPath===newPath)return;
-  toast('Moving '+name+'…');
-  try{
-    // Read old file
-    const url=`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${fromPath}?ref=${S.cfg.ghBranch||'main'}`;
-    const r=await fetch(url,{headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}});
-    if(!r.ok){toast('Move failed: could not read file');return;}
-    const d=await r.json();
-    // Create at new path
-    const createR=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${newPath}`,{
-      method:'PUT',
-      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify({message:'Move '+fromPath+' → '+newPath,content:d.content,branch:S.cfg.ghBranch||'main'})
-    });
-    if(!createR.ok){toast('Move failed: could not create file');return;}
-    // Delete old file
-    const delR=await fetch(url,{
-      method:'DELETE',
-      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify({message:'Move '+fromPath+' (delete old)',sha:d.sha,branch:S.cfg.ghBranch||'main'})
-    });
-    if(!delR.ok){toast('Warning: old file not deleted');}
-    // Update local cache
-    const cached=ghCacheGet(fromPath);
-    if(cached){
-      const cache=ghCacheLoad();
-      delete cache[fromPath];
-      ghCacheSave(cache);
-      ghCachePut(newPath,cached.content,null);
-    }
-    // Update config if this was the active file
-    if(S.cfg.ghPath===fromPath){S.cfg.ghPath=newPath;localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));}
-    // Refresh tree
-    fbTree=[];await loadFBTree();
-    toast('Moved to '+newPath);
-  }catch(e){toast('Move error: '+e.message);}
+  // Always update locally first (offline-first)
+  const cached=ghCacheGet(fromPath);
+  const content=cached?cached.content:'';
+  const cache=ghCacheLoad();
+  delete cache[fromPath];
+  ghCacheSave(cache);
+  ghCachePut(newPath,content,null);
+  ghMarkDirty(newPath);
+  // Update tree locally
+  fbTree=fbTree.filter(f=>f.path!==fromPath);
+  if(!fbTree.find(f=>f.path===newPath)) fbTree.push({path:newPath,type:'blob',sha:null});
+  cacheFBTree();
+  // Update config if this was the active file
+  if(S.cfg.ghPath===fromPath){S.cfg.ghPath=newPath;localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));}
+  // Update any open doc linked to this path
+  const doc=S.docs.find(d=>d._ghPath===fromPath);
+  if(doc){doc._ghPath=newPath;saveDocs();}
+  renderFBDocs();
+  toast('Moved '+name+(navigator.onLine?' — syncing…':' — will sync when online'));
+  // Sync to GitHub if online
+  if(navigator.onLine&&S.cfg.ghTok&&S.cfg.ghRepo){
+    try{
+      const url=`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${fromPath}?ref=${S.cfg.ghBranch||'main'}`;
+      const r=await fetch(url,{headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}});
+      if(r.ok){
+        const d=await r.json();
+        // Create at new path
+        await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${newPath}`,{
+          method:'PUT',headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+          body:JSON.stringify({message:'Move '+fromPath+' → '+newPath,content:d.content,branch:S.cfg.ghBranch||'main'})
+        });
+        // Delete old
+        await fetch(url,{
+          method:'DELETE',headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+          body:JSON.stringify({message:'Delete moved file '+fromPath,sha:d.sha,branch:S.cfg.ghBranch||'main'})
+        });
+        toast('Moved and synced ✓');
+      }
+    }catch(e){toast('Move saved locally, sync failed');}
+  }
 }
 
 /* ── NEW FILE IN FOLDER ── */
@@ -2567,23 +2571,26 @@ function fbNewFileInFolder(folder){
   fbCreateFile(path);
 }
 async function fbCreateFile(path){
-  if(!S.cfg.ghTok||!S.cfg.ghRepo){toast('Configure GitHub first');return;}
   if(fbTree.find(f=>f.path===path)){toast('File already exists');return;}
-  toast('Creating '+path.split('/').pop()+'…');
-  try{
-    const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${path}`,{
-      method:'PUT',
-      headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify({message:'Create '+path,content:btoa(''),branch:S.cfg.ghBranch||'main'})
-    });
-    if(!r.ok){const e=await r.json();toast('Error: '+(e.message||r.status));return;}
-    ghCachePut(path,'',null);
-    if(!fbTree.find(f=>f.path===path)) fbTree.push({path,type:'blob',sha:null});
-    cacheFBTree();
-    renderFBDocs();
-    toast('Created '+path.split('/').pop());
-    fbOpenFile(path);
-  }catch(e){toast('Error: '+e.message);}
+  // Always create locally first (offline-first)
+  ghCachePut(path,'',null);
+  ghMarkDirty(path);
+  if(!fbTree.find(f=>f.path===path)) fbTree.push({path,type:'blob',sha:null});
+  cacheFBTree();
+  renderFBDocs();
+  const name=path.split('/').pop();
+  toast(name+' created'+(navigator.onLine?' — syncing…':' — will sync when online'));
+  fbOpenFile(path);
+  // Sync to GitHub if online
+  if(navigator.onLine&&S.cfg.ghTok&&S.cfg.ghRepo){
+    try{
+      await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${path}`,{
+        method:'PUT',
+        headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+        body:JSON.stringify({message:'Create '+path,content:btoa(''),branch:S.cfg.ghBranch||'main'})
+      });
+    }catch(e){}
+  }
 }
 
 /* ── NEW FILE ── */
