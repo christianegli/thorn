@@ -590,6 +590,9 @@ body.split-view #split-prev{display:block}
     <button class="tb-btn" id="tb-files" onclick="toggleFB()" title="Files (⌘⇧B)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h5l1.5 1.5H14v9H2V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
     </button>
+    <button class="tb-btn" id="tb-tabs" onclick="toggleTabBar()" title="Tabs">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="5" height="9" rx="1" stroke="currentColor" stroke-width="1.1"/><rect x="7.5" y="3.5" width="3.5" height="9" rx="1" stroke="currentColor" stroke-width="1.1" opacity=".5"/><rect x="12" y="3.5" width="2.5" height="9" rx="1" stroke="currentColor" stroke-width="1.1" opacity=".3"/></svg>
+    </button>
     <span class="tb-title" id="tb-title">Untitled</span>
   </div>
   <div class="tb-right">
@@ -1149,31 +1152,25 @@ function renderTabs(){
   const active=bar.querySelector('.t-tab.active');
   if(active)active.scrollIntoView({block:'nearest',inline:'nearest'});
 }
-// Tab bar auto-hide: show on hover near top edge of screen
-(function(){
-  var bar=document.getElementById('tab-bar');
-  var topbar=document.getElementById('topbar');
-  var hideTimer=null;
-  function showTabs(){
-    clearTimeout(hideTimer);
-    if(bar.style.display!=='none') bar.classList.add('tab-visible');
+// Tab bar: toggled by button, no hover logic
+let tabsVisible=false;
+function toggleTabBar(){
+  tabsVisible=!tabsVisible;
+  const bar=document.getElementById('tab-bar');
+  const topbar=document.getElementById('topbar');
+  const btn=document.getElementById('tb-tabs');
+  if(tabsVisible){
+    bar.classList.add('tab-visible');
     if(topbar) topbar.style.top='36px';
+    if(btn) btn.classList.add('active');
+  } else {
+    bar.classList.remove('tab-visible');
+    if(topbar) topbar.style.top='0';
+    if(btn) btn.classList.remove('active');
   }
-  function hideTabs(){
-    hideTimer=setTimeout(function(){
-      bar.classList.remove('tab-visible');
-      if(topbar) topbar.style.top='0';
-    }, 400);
-  }
-  // Show tabs when mouse moves to top 6px of viewport
-  document.addEventListener('mousemove',function(e){
-    if(e.clientY<=6) showTabs();
-  });
-  bar.addEventListener('mouseenter',showTabs);
-  bar.addEventListener('mouseleave',hideTabs);
-  // Expose so renderTabs can use after rebuild
-  window._showTabs=showTabs; window._hideTabs=hideTabs;
-})();
+}
+window._showTabs=function(){};
+window._hideTabs=function(){};
 function tabClick(id){
   if(id===S.cur)return;
   if(S.dirty)saveDoc(true);
