@@ -1152,13 +1152,18 @@ function renderTabs(){
 // Tab bar auto-hide: show on hover near top edge of screen
 (function(){
   var bar=document.getElementById('tab-bar');
+  var topbar=document.getElementById('topbar');
   var hideTimer=null;
   function showTabs(){
     clearTimeout(hideTimer);
     if(bar.style.display!=='none') bar.classList.add('tab-visible');
+    if(topbar) topbar.style.top='36px';
   }
   function hideTabs(){
-    hideTimer=setTimeout(function(){ bar.classList.remove('tab-visible'); }, 400);
+    hideTimer=setTimeout(function(){
+      bar.classList.remove('tab-visible');
+      if(topbar) topbar.style.top='0';
+    }, 400);
   }
   // Show tabs when mouse moves to top 6px of viewport
   document.addEventListener('mousemove',function(e){
