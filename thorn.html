@@ -76,7 +76,8 @@ html{overflow-x:hidden}
 #writer-surface.shifted-left{transform:translateX(-320px)}
 
 /* ── TOPBAR (always visible, minimal) ── */
-#topbar{position:relative;z-index:100;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg);border-bottom:1px solid transparent;opacity:0.35;transition:opacity .25s,border-color .25s;pointer-events:auto}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:500;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg);border-bottom:1px solid transparent;opacity:0.3;transition:opacity .2s,border-color .2s}
+#topbar:hover{opacity:1;border-bottom-color:var(--border-subtle)}
 #topbar:hover,#topbar.pinned{opacity:1;border-bottom-color:var(--border-subtle)}
 #topbar-trigger{display:none}
 .tb-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:none;border:none;color:var(--text-tertiary);cursor:pointer;transition:all .15s;font-size:15px;position:relative}
@@ -583,19 +584,7 @@ body.split-view #split-prev{display:block}
   </div>
 </div>
 
-<!-- Writer surface: slides to reveal panels behind it -->
-<div id="writer-surface">
-
-<!-- Menu button (top-right corner, appears on hover) -->
-<div id="menu-btn-zone"></div>
-<button id="menu-btn" onclick="toggleAppMenu()" title="Menu">
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-</button>
-
-<div id="tab-trigger"></div>
-<div id="tab-bar" style="display:none"></div>
-
-<!-- Topbar: appears on hover, always accessible -->
+<!-- Topbar: OUTSIDE writer-surface, fixed at top -->
 <div id="topbar">
   <div class="tb-left">
     <button class="tb-btn" id="tb-files" onclick="toggleFB()" title="Files (⌘⇧B)">
@@ -617,6 +606,9 @@ body.split-view #split-prev{display:block}
   </div>
 </div>
 
+<!-- Writer surface: slides to reveal panels behind it -->
+<div id="writer-surface">
+<div id="tab-bar" style="display:none"></div>
 <div id="gh-banner"></div>
 <div id="col">
   <div id="ov" aria-hidden="true"></div>
