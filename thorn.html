@@ -1716,6 +1716,7 @@ const CMDS=[
   {t:'sync',l:'Commit to GitHub', k:'⌘⇧S',  fn:()=>syncToGH()},
   {t:'sync',l:'Pull from GitHub', k:'⌘⇧P',  fn:()=>pullFromGH()},
   {t:'sync',l:'New File on GitHub',k:'',    fn:()=>openNewFile()},
+  {t:'sync',l:'Push Offline Changes',k:'',fn:()=>ghPushPending()},
   // view
   {t:'navigate',l:'Quick Switcher', k:'⌘P',  fn:()=>openQS()},
   {t:'view',l:'Preview',          k:'',   fn:()=>togglePreview()},
@@ -1937,12 +1938,21 @@ async function syncToGH(auto){
       dot('ok');
       const ghMsg=auto?`Auto-committed ${commitSha}`:`✓ Pushed to GitHub  ${commitSha}`; toast(ghMsg); showGhBanner(ghMsg);
       S.dirty=false;
+      // Update offline cache with new SHA, clear dirty flag
+      if(S.cfg.ghPath) ghCachePut(S.cfg.ghPath,ta.value,data.content?data.content.sha:'');
       scheduleAutoCommit();
     } else {
       const e=await r.json();dot('err');toast('Commit failed: '+(e.message||r.status));
       scheduleAutoCommit();
     }
-  }catch(e){dot('err');toast('Commit error: '+e.message);scheduleAutoCommit();}
+  }catch(e){
+    // Offline: save locally, mark as pending push
+    ghCachePut(S.cfg.ghPath,ta.value,null);
+    ghMarkDirty(S.cfg.ghPath);
+    saveDoc(true);
+    dot('dirty');toast('Offline — saved locally, will push when online');
+    scheduleAutoCommit();
+  }
 }
 
 async function pullFromGH(){
@@ -1956,7 +1966,18 @@ async function pullFromGH(){
     const md=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
     ta.value=md; ta.dispatchEvent(new Event('input'));
     saveDoc(true); dot('ok'); toast('Pulled from GitHub ✓');
-  }catch(e){dot('err');toast('Pull error: '+e.message);}
+    // Cache locally for offline access
+    ghCachePut(S.cfg.ghPath,md,d.sha);
+  }catch(e){
+    // Offline fallback: load from local cache
+    const cached=ghCacheGet(S.cfg.ghPath);
+    if(cached){
+      ta.value=cached.content; ta.dispatchEvent(new Event('input'));
+      saveDoc(true); dot('ok'); toast('Loaded from offline cache');
+    } else {
+      dot('err');toast('Offline — no cached version of this file');
+    }
+  }
 }
 
 /* ── ANNOTATIONS ── */
@@ -2280,19 +2301,25 @@ document.addEventListener('click',e=>{
 
 async function loadFBTree(){
   if(!S.cfg.ghTok||!S.cfg.ghRepo){return;}
-  document.getElementById('fb-repo-label').textContent=S.cfg.ghRepo+(S.cfg.ghBranch?' · '+S.cfg.ghBranch:'');
-  document.getElementById('fb-tree').innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Loading…</div>';
   const branch=S.cfg.ghBranch||'main';
   try{
     const r=await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/git/trees/${branch}?recursive=1&_t=${Date.now()}`,{
       headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}
     });
-    if(!r.ok){document.getElementById('fb-tree').innerHTML=`<div style="padding:16px;color:var(--fg3);font-size:12px">Error: ${r.status}</div>`;return;}
+    if(!r.ok) throw new Error('HTTP '+r.status);
     const data=await r.json();
     fbTree=data.tree.filter(f=>f.type==='blob'&&/\.(md|txt|markdown)$/i.test(f.path));
+    cacheFBTree(); // cache for offline
     renderFBTree();
   }catch(e){
-    document.getElementById('fb-tree').innerHTML=`<div style="padding:16px;color:var(--fg3);font-size:12px">Failed: ${e.message}</div>`;
+    // Offline fallback: load cached tree
+    if(loadCachedFBTree()){
+      renderFBTree();
+      toast('Offline — showing cached file tree');
+    } else {
+      const el=document.getElementById('fb-tree');
+      if(el) el.innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">Offline — no cached tree</div>';
+    }
   }
 }
 let fbCollapsed={};
@@ -2399,13 +2426,22 @@ function toggleFBDir(el){
 }
 async function fbOpenFile(path){
   if(!S.cfg.ghTok||!S.cfg.ghRepo)return;
-  // Update current path
   S.cfg.ghPath=path;
   localStorage.setItem('prose_cfg',JSON.stringify(S.cfg));
   closeFB();
-  toast('Opening '+path.split('/').pop()+'…');
-  await pullFromGH();
-  renderFBTree();
+  const name=path.split('/').pop();
+  // Try loading from local cache first (instant), then sync in background
+  const cached=ghCacheGet(path);
+  if(cached){
+    ta.value=cached.content; ta.dispatchEvent(new Event('input'));
+    saveDoc(true); dot(cached.dirty?'dirty':'ok');
+    toast(cached.dirty?name+' (local changes)':name);
+    // Try to pull latest in background if online
+    if(navigator.onLine) pullFromGH().catch(()=>{});
+  } else {
+    toast('Opening '+name+'…');
+    await pullFromGH();
+  }
 }
 
 /* ── NEW FILE ── */
@@ -3830,6 +3866,104 @@ function renderGraph(){
       }
     }
   };
+}
+
+/* ── OFFLINE FILE CACHE ── */
+// Stores GitHub file contents locally for offline access
+// Key: 'gh_cache' → { [path]: { content, sha, dirty, updated } }
+function ghCacheLoad(){
+  try{return JSON.parse(localStorage.getItem('gh_cache')||'{}');}catch(e){return{};}
+}
+function ghCacheSave(cache){
+  localStorage.setItem('gh_cache',JSON.stringify(cache));
+}
+function ghCachePut(path,content,sha){
+  const cache=ghCacheLoad();
+  cache[path]={content,sha:sha||((cache[path]||{}).sha)||null,dirty:!sha,updated:Date.now()};
+  ghCacheSave(cache);
+}
+function ghCacheGet(path){
+  const cache=ghCacheLoad();
+  return cache[path]||null;
+}
+function ghMarkDirty(path){
+  const cache=ghCacheLoad();
+  if(cache[path]){cache[path].dirty=true;cache[path].updated=Date.now();ghCacheSave(cache);}
+}
+function ghCacheList(){
+  return ghCacheLoad();
+}
+
+// Count files with local changes not yet pushed
+function ghPendingCount(){
+  const cache=ghCacheLoad();
+  return Object.values(cache).filter(f=>f.dirty).length;
+}
+
+// Push all pending offline changes when back online
+async function ghPushPending(){
+  const cache=ghCacheLoad();
+  const dirty=Object.entries(cache).filter(([_,v])=>v.dirty);
+  if(!dirty.length){toast('Nothing to push');return;}
+  if(!S.cfg.ghTok||!S.cfg.ghRepo){toast('Configure GitHub first');return;}
+  toast('Pushing '+dirty.length+' file'+(dirty.length>1?'s':'')+'…');
+  let ok=0,fail=0;
+  for(const [path,file] of dirty){
+    try{
+      const url=`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${path}`;
+      const content=btoa(unescape(encodeURIComponent(file.content)));
+      // Get current SHA
+      let sha=file.sha||'';
+      try{
+        const r=await fetch(url,{headers:{'Authorization':'token '+S.cfg.ghTok,'Accept':'application/vnd.github.v3+json'}});
+        if(r.ok){const d=await r.json();sha=d.sha||sha;}
+      }catch(e){}
+      const body={message:'Sync: '+path,content,branch:S.cfg.ghBranch||'main'};
+      if(sha)body.sha=sha;
+      const r=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
+      if(r.ok){
+        const data=await r.json();
+        cache[path].sha=data.content?data.content.sha:'';
+        cache[path].dirty=false;
+        ok++;
+      } else {fail++;}
+    }catch(e){fail++;}
+  }
+  ghCacheSave(cache);
+  if(ok)toast('Pushed '+ok+' file'+(ok>1?'s':''));
+  if(fail)toast(fail+' file'+(fail>1?'s':'')+' failed to push');
+  dot(fail?'err':'ok');
+}
+
+// Auto-push pending when coming back online
+window.addEventListener('online',function(){
+  toast('Back online');
+  const pending=ghPendingCount();
+  if(pending>0){
+    toast(pending+' file'+(pending>1?'s':'')+' to push');
+    // Auto-push after a short delay
+    setTimeout(ghPushPending,2000);
+  }
+});
+window.addEventListener('offline',function(){
+  toast('Offline — changes saved locally');
+});
+
+// Also cache the file tree for offline browsing
+function cacheFBTree(){
+  if(fbTree.length){
+    localStorage.setItem('gh_tree',JSON.stringify({repo:S.cfg.ghRepo,branch:S.cfg.ghBranch,tree:fbTree,updated:Date.now()}));
+  }
+}
+function loadCachedFBTree(){
+  try{
+    const data=JSON.parse(localStorage.getItem('gh_tree')||'{}');
+    if(data.repo===S.cfg.ghRepo&&data.branch===S.cfg.ghBranch&&data.tree){
+      fbTree=data.tree;
+      return true;
+    }
+  }catch(e){}
+  return false;
 }
 
 /* ── FIND BAR (existing) — add search shortcut ── */
