@@ -432,10 +432,9 @@ html{overflow-x:hidden}
 #gh-banner.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── CORNER MENU BUTTON ── */
-#menu-btn{position:fixed;top:14px;right:16px;z-index:60;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:none;border:none;color:var(--text-tertiary);cursor:pointer;transition:all .2s;opacity:0}
-#menu-btn:hover{opacity:1!important;background:var(--surface-active);color:var(--text-secondary)}
-#menu-btn-zone{position:fixed;top:0;right:0;width:56px;height:48px;z-index:59}
-#menu-btn-zone:hover~#menu-btn{opacity:.5}
+/* ── CORNER MENU BUTTON — removed, integrated into topbar ── */
+#menu-btn{display:none}
+#menu-btn-zone{display:none}
 
 /* ── APP MENU ── */
 #app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:1;display:none;flex-direction:column;font-family:var(--font-ui)}
@@ -611,8 +610,8 @@ body.split-view #split-prev{display:block}
     <button class="tb-btn" id="tb-annot" onclick="toggleAP()" title="Annotations (⌘⇧I)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v8H6L3 14V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
     </button>
-    <button class="tb-btn" onclick="openSettings()" title="Settings (⌘,)">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 2v2m0 8v2M2 8h2m8 0h2m-1.5-4.5L11 5m-6 6-1.5 1.5m0-9L5 5m6 6 1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <button class="tb-btn" onclick="toggleAppMenu()" title="Menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4.5h10M3 8h10M3 11.5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     </button>
   </div>
 </div>
