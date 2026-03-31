@@ -1172,14 +1172,17 @@ function toggleTabBar(){
   tabsVisible=!tabsVisible;
   const bar=document.getElementById('tab-bar');
   const topbar=document.getElementById('topbar');
+  const menu=document.getElementById('top-menu');
   const btn=document.getElementById('tb-tabs');
   if(tabsVisible){
     bar.classList.add('tab-visible');
     if(topbar) topbar.style.top='36px';
+    if(menu&&menu.classList.contains('open')) menu.style.top='80px';
     if(btn) btn.classList.add('active');
   } else {
     bar.classList.remove('tab-visible');
     if(topbar) topbar.style.top='0';
+    if(menu&&menu.classList.contains('open')) menu.style.top='44px';
     if(btn) btn.classList.remove('active');
   }
 }
@@ -3414,18 +3417,24 @@ obDots.forEach((d, i) => d.addEventListener('click', () => obGoto(i)));
 // Show on first run
 if (!localStorage.getItem('thorn_onboarded')) obShow();
 
-/* formatting toolbar — show on topbar hover */
+/* formatting toolbar — show on topbar hover, follows topbar position */
 (function(){
   var topbar=document.getElementById('topbar');
   var menu=document.getElementById('top-menu');
   var leaveTimer=null;
-  function show(){clearTimeout(leaveTimer);menu.classList.add('open');}
+  function show(){
+    clearTimeout(leaveTimer);
+    // Position below wherever topbar currently is
+    var tbTop=parseInt(topbar.style.top)||0;
+    menu.style.top=(tbTop+44)+'px';
+    menu.classList.add('open');
+  }
   function hide(){leaveTimer=setTimeout(function(){menu.classList.remove('open');},400);}
   if(topbar){
     topbar.addEventListener('mouseenter',show);
     topbar.addEventListener('mouseleave',hide);
   }
-  menu.addEventListener('mouseenter',show);
+  menu.addEventListener('mouseenter',function(){clearTimeout(leaveTimer);});
   menu.addEventListener('mouseleave',hide);
 })();
 /* click outside to close settings */
