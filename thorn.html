@@ -1174,17 +1174,21 @@ function toggleTabBar(){
   const topbar=document.getElementById('topbar');
   const menu=document.getElementById('top-menu');
   const btn=document.getElementById('tb-tabs');
+  const offset=tabsVisible?'36px':'0';
   if(tabsVisible){
     bar.classList.add('tab-visible');
-    if(topbar) topbar.style.top='36px';
-    if(menu&&menu.classList.contains('open')) menu.style.top='80px';
     if(btn) btn.classList.add('active');
   } else {
     bar.classList.remove('tab-visible');
-    if(topbar) topbar.style.top='0';
-    if(menu&&menu.classList.contains('open')) menu.style.top='44px';
     if(btn) btn.classList.remove('active');
   }
+  // Push everything down
+  if(topbar) topbar.style.top=offset;
+  if(menu&&menu.classList.contains('open')) menu.style.top=tabsVisible?'80px':'44px';
+  document.querySelectorAll('#fb,#ap,#app-menu,#mo-settings,#cn,#stats-panel').forEach(function(el){
+    el.style.top=offset;
+    el.style.height=tabsVisible?'calc(100vh - 36px)':'100vh';
+  });
 }
 window._showTabs=function(){};
 window._hideTabs=function(){};
