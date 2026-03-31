@@ -172,8 +172,11 @@ html{overflow-x:hidden}
 
 /* formatting toolbar — below topbar, shown on topbar hover */
 #top-menu-trigger{display:none}
-#top-menu{position:fixed;top:44px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--radius-md) var(--radius-md);z-index:499;display:flex;align-items:center;gap:1px;padding:0 14px;height:40px;box-shadow:var(--shadow-md);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border-top:none}
+#top-menu{position:fixed;top:44px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--radius-md) var(--radius-md);z-index:499;display:flex;align-items:center;gap:2px;padding:0 10px;height:40px;box-shadow:var(--shadow-md);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border-top:none}
 #top-menu.open{opacity:1;pointer-events:auto}
+#top-menu button{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;font-family:var(--font-ui);font-weight:500;padding:6px 10px;border-radius:var(--radius-sm);transition:background .15s,color .15s;display:flex;align-items:center;gap:5px;line-height:1}
+#top-menu button:hover{background:var(--surface-hover);color:var(--text-primary)}
+#top-menu .tm-sep{width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0}
 /* settings panel — right side */
 /* settings panel — slides behind writer from right */
 #mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
@@ -960,8 +963,9 @@ body.split-view #split-prev{display:block}
 <div id="fb">
   <div id="fb-head">
     <span>Files</span>
-    <div style="display:flex;gap:4px">
-      <button onclick="newDoc()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:13px;padding:2px 7px;border-radius:4px;font-family:var(--font-ui)" title="New document">+</button>
+    <div style="display:flex;gap:2px">
+      <button onclick="fbNewFolder()" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:11px;padding:3px 8px;border-radius:4px;font-family:var(--font-ui);transition:color .15s" title="New folder" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color=''">📁+</button>
+      <button onclick="fbNewFileInRoot()" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:14px;padding:2px 7px;border-radius:4px;font-family:var(--font-ui);transition:color .15s" title="New file" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color=''">+</button>
     </div>
   </div>
   <!-- Documents list (local + GitHub unified) -->
@@ -2560,6 +2564,38 @@ async function fbMoveFile(fromPath,toFolder){
       }
     }catch(e){toast('Move saved locally, sync failed');}
   }
+}
+
+/* ── NEW FOLDER ── */
+async function fbNewFolder(){
+  const name=prompt('Folder name:');
+  if(!name||!name.trim())return;
+  const folder=name.trim().replace(/[^a-zA-Z0-9_\-. ]/g,'');
+  // Create folder by creating a placeholder file in it (GitHub needs at least one file)
+  const path=folder+'/.gitkeep';
+  toast('Creating folder '+folder+'…');
+  // Add to local tree
+  if(!fbTree.find(f=>f.path===path)) fbTree.push({path,type:'blob',sha:null});
+  cacheFBTree();
+  renderFBDocs();
+  // Sync to GitHub if online
+  if(navigator.onLine&&S.cfg.ghTok&&S.cfg.ghRepo){
+    try{
+      await fetch(`https://api.github.com/repos/${S.cfg.ghRepo}/contents/${path}`,{
+        method:'PUT',
+        headers:{'Authorization':'token '+S.cfg.ghTok,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+        body:JSON.stringify({message:'Create folder '+folder,content:btoa(''),branch:S.cfg.ghBranch||'main'})
+      });
+    }catch(e){}
+  }
+  toast('Folder '+folder+' created');
+}
+
+function fbNewFileInRoot(){
+  const name=prompt('File name:','untitled.md');
+  if(!name)return;
+  const fileName=name.includes('.')?name:name+'.md';
+  fbCreateFile(fileName);
 }
 
 /* ── NEW FILE IN FOLDER ── */
