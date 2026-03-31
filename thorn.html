@@ -90,6 +90,14 @@ html{overflow-x:hidden}
 .tb-dot{width:6px;height:6px;border-radius:50%;background:#5cb85c;flex-shrink:0}
 .tb-dot.dirty{background:#fbbf24}
 .tb-dot.err{background:#f87171}
+
+/* ── FORMAT BAR (below topbar, always accessible) ── */
+#format-bar{position:fixed;top:44px;left:50%;transform:translateX(-50%);z-index:499;display:flex;align-items:center;gap:2px;padding:0 10px;height:36px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-md) var(--radius-md);box-shadow:var(--shadow-sm);opacity:0;transition:opacity .15s;pointer-events:none}
+#format-bar.visible{opacity:1;pointer-events:auto}
+#format-bar button{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;font-family:var(--font-ui);font-weight:500;padding:5px 9px;border-radius:var(--radius-sm);transition:background .12s,color .12s;line-height:1}
+#format-bar button:hover{background:var(--surface-hover);color:var(--text-primary)}
+#format-bar .fb-sep{width:1px;height:16px;background:var(--border);margin:0 3px;flex-shrink:0}
+
 /* column */
 #col{max-width:var(--w);margin:0 auto;padding:var(--vpad) 24px;position:relative;overflow:hidden}
 /* textarea + overlay */
@@ -536,10 +544,27 @@ body.split-view #split-prev{display:block}
     <button class="tb-btn" onclick="openCmd()" title="Commands (⌘K)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     </button>
-    <button class="tb-btn" id="tb-gear" onclick="toggleRightPanel()" title="Tools">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 2v2m0 8v2M2 8h2m8 0h2m-1.5-4.5L11 5m-6 6-1.5 1.5m0-9L5 5m6 6 1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <button class="tb-btn" id="tb-gear" onclick="toggleRightPanel()" title="Tools &amp; Settings">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.9 1.5h2.2l.3 1.8.8.3 1.5-1 1.5 1.6-1 1.5.3.8 1.8.3v2.2l-1.8.3-.3.8 1 1.5-1.6 1.5-1.5-1-.8.3-.3 1.8H6.9l-.3-1.8-.8-.3-1.5 1-1.5-1.6 1-1.5-.3-.8-1.8-.3V6.9l1.8-.3.3-.8-1-1.5L5.3 2.8l1.5 1 .8-.3z" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.1"/></svg>
     </button>
   </div>
+</div>
+
+<!-- Quick formatting bar (between topbar and writer) -->
+<div id="format-bar">
+  <button onclick="wrapSel('**','**')" title="Bold (⌘B)"><b>B</b></button>
+  <button onclick="wrapSel('*','*')" title="Italic (⌘I)"><i>I</i></button>
+  <button onclick="wrapSel('~~','~~')" title="Strikethrough"><s>S</s></button>
+  <button onclick="wrapSel('\`','\`')" title="Code">C</button>
+  <span class="fb-sep"></span>
+  <button onclick="ftbHead(1)" title="H1">H1</button>
+  <button onclick="ftbHead(2)" title="H2">H2</button>
+  <button onclick="ftbLine('> ')" title="Quote">"</button>
+  <button onclick="ftbLine('- ')" title="List">·</button>
+  <button onclick="ftbLink()" title="Link">⌘K</button>
+  <span class="fb-sep"></span>
+  <button onclick="toggleFocus()" title="Focus mode (⌘F)">Focus</button>
+  <button onclick="toggleFullscreen()" title="Fullscreen (F11)">⤢</button>
 </div>
 
 <!-- Writer surface: slides to reveal panels behind it -->
@@ -3411,6 +3436,17 @@ openFB=function(){
 // Sync footer on input
 ta.addEventListener('input',syncFooter);
 syncFooter();
+
+/* ── FORMAT BAR: show on topbar hover ── */
+(function(){
+  var topbar=document.getElementById('topbar');
+  var fbar=document.getElementById('format-bar');
+  var timer=null;
+  function show(){clearTimeout(timer);fbar.classList.add('visible');}
+  function hide(){timer=setTimeout(function(){fbar.classList.remove('visible');},400);}
+  if(topbar){topbar.addEventListener('mouseenter',show);topbar.addEventListener('mouseleave',hide);}
+  if(fbar){fbar.addEventListener('mouseenter',function(){clearTimeout(timer);});fbar.addEventListener('mouseleave',hide);}
+})();
 
 /* ── WIKI LINKS ── */
 function findDocByTitle(title){
