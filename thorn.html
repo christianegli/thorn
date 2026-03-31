@@ -167,7 +167,7 @@ html{overflow-x:hidden}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
 /* annotations panel — hidden behind writer, only visible when shifted */
 #ap-trigger{display:none}
-#ap{position:fixed;top:0;right:0;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:300;font-size:13px;font-family:var(--font-ui);display:none}
+#ap{position:fixed;top:44px;right:0;width:300px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:300;font-size:13px;font-family:var(--font-ui);display:none}
 #ap.open{display:block}
 
 /* formatting toolbar — below topbar, shown on topbar hover */
@@ -179,7 +179,7 @@ html{overflow-x:hidden}
 #top-menu .tm-sep{width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0}
 /* settings panel — right side */
 /* settings panel — slides behind writer from right */
-#mo-settings{position:fixed;top:0;right:0;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#mo-settings{position:fixed;top:44px;right:0;width:400px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 #mo-settings.open{display:flex}
 #sp-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem .6rem;border-bottom:1px solid var(--border);flex-shrink:0}
 #sp-brand{display:flex;align-items:center;gap:.45rem}
@@ -236,7 +236,7 @@ html{overflow-x:hidden}
 
 /* ── FILE BROWSER (sits BEHIND writer surface) ── */
 #fb-trigger{display:none}
-#fb{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
+#fb{position:fixed;top:44px;left:0;width:280px;height:calc(100vh - 44px);background:var(--surface);border-right:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 #fb.open{display:flex}
 /* fb is always at left:0, writer slides to reveal it */
 #fb-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;flex-shrink:0}
@@ -271,7 +271,7 @@ html{overflow-x:hidden}
 #fb-foot button:hover{border-color:var(--accent);color:var(--accent)}
 
 /* ── CHAPTER NAVIGATOR ── */
-#cn{position:fixed;top:0;right:-260px;width:240px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:200;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-4px 0 24px rgba(0,0,0,.04)}
+#cn{position:fixed;top:44px;right:-260px;width:240px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);z-index:200;display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-4px 0 24px rgba(0,0,0,.04)}
 #cn.open{right:0}
 #cn-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;height:44px}
 #cn-head span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--fg2);font-family:var(--font-ui)}
@@ -290,7 +290,7 @@ html{overflow-x:hidden}
 #goal-fill.done{background:#4ade80}
 
 /* ── STATS PANEL ── */
-#stats-panel{position:fixed;top:0;right:-380px;width:320px;height:100vh;background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:200;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-4px 0 24px rgba(0,0,0,.06)}
+#stats-panel{position:fixed;top:44px;right:-380px;width:320px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:200;transition:right .25s cubic-bezier(.4,0,.2,1);font-size:13px;font-family:var(--font-ui);box-shadow:-4px 0 24px rgba(0,0,0,.06)}
 #stats-panel.open{right:0}
 #stats-panel h3{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--fg2);margin-bottom:18px;font-family:var(--font-ui)}
 .stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--border-subtle)}
@@ -450,7 +450,7 @@ html{overflow-x:hidden}
 #menu-btn-zone{display:none}
 
 /* ── APP MENU ── */
-#app-menu{position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:600;display:none;flex-direction:column;font-family:var(--font-ui)}
+#app-menu{position:fixed;top:44px;right:0;width:260px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);z-index:600;display:none;flex-direction:column;font-family:var(--font-ui)}
 #app-menu.open{display:flex}
 #app-menu-head{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 #app-menu-head span{font-family:var(--font-mono);font-size:13px;font-weight:500;letter-spacing:.05em;color:var(--text-primary)}
@@ -1171,10 +1171,7 @@ let tabsVisible=false;
 function toggleTabBar(){
   tabsVisible=!tabsVisible;
   const bar=document.getElementById('tab-bar');
-  const topbar=document.getElementById('topbar');
-  const menu=document.getElementById('top-menu');
   const btn=document.getElementById('tb-tabs');
-  const offset=tabsVisible?'36px':'0';
   if(tabsVisible){
     bar.classList.add('tab-visible');
     if(btn) btn.classList.add('active');
@@ -1182,13 +1179,16 @@ function toggleTabBar(){
     bar.classList.remove('tab-visible');
     if(btn) btn.classList.remove('active');
   }
-  // Push everything down
-  if(topbar) topbar.style.top=offset;
-  if(menu&&menu.classList.contains('open')) menu.style.top=tabsVisible?'80px':'44px';
+  // Shift topbar + all panels below tabs
+  const top=tabsVisible?'80px':'44px'; // 36 tabs + 44 topbar, or just 44 topbar
+  const h=tabsVisible?'calc(100vh - 80px)':'calc(100vh - 44px)';
+  document.getElementById('topbar').style.top=tabsVisible?'36px':'0';
   document.querySelectorAll('#fb,#ap,#app-menu,#mo-settings,#cn,#stats-panel').forEach(function(el){
-    el.style.top=offset;
-    el.style.height=tabsVisible?'calc(100vh - 36px)':'100vh';
+    el.style.top=top;
+    el.style.height=h;
   });
+  var menu=document.getElementById('top-menu');
+  if(menu&&menu.classList.contains('open')) menu.style.top=tabsVisible?'80px':'44px';
 }
 window._showTabs=function(){};
 window._hideTabs=function(){};
