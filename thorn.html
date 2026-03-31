@@ -73,7 +73,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:var(
 html{overflow-x:hidden}
 #writer-surface{background:var(--bg);min-height:100vh;transition:transform .32s cubic-bezier(.4,0,.2,1)}
 #writer-surface.shifted-right{transform:translateX(280px)}
-#writer-surface.shifted-left{transform:translateX(-320px)}
+#writer-surface.shifted-left{transform:translateX(-340px)}
 
 /* ── TOPBAR (always visible, minimal) ── */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:500;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--bg);border-bottom:1px solid transparent;opacity:0.3;transition:opacity .2s,border-color .2s}
@@ -165,27 +165,12 @@ html{overflow-x:hidden}
 .ci:hover,.ci.sel{background:var(--accent-subtle)}
 .ci-l{font-size:13px;font-family:var(--font-ui);color:var(--fg)}
 .ci-k{font-size:10px;color:var(--fg3);font-family:var(--font-mono);background:var(--surface-hover);padding:3px 7px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:.02em}
-/* annotations panel — hidden behind writer, only visible when shifted */
-#ap-trigger{display:none}
-#ap{position:fixed;top:44px;right:0;width:300px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);padding:28px 22px;overflow-y:auto;z-index:300;font-size:13px;font-family:var(--font-ui);display:none}
-#ap.open{display:block}
-
-/* formatting toolbar — removed (use floating toolbar instead) */
-/* settings panel — right side */
-/* settings panel — slides behind writer from right */
-#mo-settings{position:fixed;top:44px;right:0;width:400px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
-#mo-settings.open{display:flex}
-#sp-header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem .6rem;border-bottom:1px solid var(--border);flex-shrink:0}
-#sp-brand{display:flex;align-items:center;gap:.45rem}
-.sp-logo-icon{height:20px;width:auto;mix-blend-mode:multiply;opacity:.75}
-.sp-logo-type{height:13px;width:auto;mix-blend-mode:multiply;opacity:.45}
-#sp-close{background:none;border:none;color:var(--fg3);font-size:1rem;cursor:pointer;padding:4px;line-height:1;border-radius:var(--radius-sm);transition:color .15s,background .15s}
-#sp-close:hover{color:var(--fg);background:var(--surface-hover)}
+/* annotations + settings (now inside right panel) */
 #sp-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 4px;flex-shrink:0;overflow-x:auto}
 #sp-body{overflow-y:auto;padding:18px 22px;flex:1;display:block}
 #sp-body .spanel{display:none;min-width:280px;flex:1}
 #sp-foot{padding:12px 22px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px}
-#ap h3{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--fg2);margin-bottom:18px;font-family:var(--font-ui)}
+#rp-annotations h3{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--fg2);margin-bottom:18px;font-family:var(--font-ui)}
 .ai{padding:14px;margin-bottom:8px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg);transition:border-color .15s}
 .ai:hover{border-color:var(--border)}
 .ai-q{font-style:italic;color:var(--fg2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:6px;font-family:var(--font)}
@@ -229,7 +214,6 @@ html{overflow-x:hidden}
 *:hover>::-webkit-scrollbar-thumb,*:hover::-webkit-scrollbar-thumb{background:rgba(128,128,128,.2)}
 
 /* ── FILE BROWSER (sits BEHIND writer surface) ── */
-#fb-trigger{display:none}
 #fb{position:fixed;top:44px;left:0;width:280px;height:calc(100vh - 44px);background:var(--surface);border-right:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-size:13px;font-family:var(--font-ui)}
 #fb.open{display:flex}
 /* fb is always at left:0, writer slides to reveal it */
@@ -264,7 +248,7 @@ html{overflow-x:hidden}
 #fb-foot button{background:none;border:1px solid var(--border);color:var(--fg2);cursor:pointer;font-size:11px;padding:4px 12px;border-radius:var(--radius-sm);font-family:var(--font-ui);font-weight:500;transition:all .15s}
 #fb-foot button:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ── CHAPTER NAVIGATOR — removed, outline lives in file browser ── */
+/* ── CHAPTER NAVIGATOR — removed ── */
 
 /* ── WORD GOAL ── */
 #sb-goal{display:none;align-items:center;gap:5px}
@@ -439,16 +423,18 @@ html{overflow-x:hidden}
 .ctx-key{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)}
 .ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
 
-/* ── QUICK SWITCHER ── */
-#qs-mo .mbox{width:480px;padding:0;overflow:hidden}
-#qs-in{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);padding:14px 18px;font-family:var(--font-ui);font-size:15px;color:var(--fg);outline:none}
-#qs-in::placeholder{color:var(--text-tertiary)}
-.qs-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-radius:0}
-.qs-item:hover,.qs-item.sel{background:var(--accent-subtle)}
-.qs-title{font-size:14px;font-family:var(--font-ui);color:var(--fg);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qs-item.sel .qs-title{color:var(--accent-text)}
-.qs-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)}
-.qs-icon{font-size:14px;color:var(--text-tertiary);width:18px;text-align:center}
+/* ── QUICK SWITCHER — removed, use command palette (⌘K) ── */
+
+/* ── RIGHT PANEL (unified: Annotations | Settings | Stats | Tools) ── */
+#right-panel{position:fixed;top:44px;right:0;width:340px;height:calc(100vh - 44px);background:var(--surface);border-left:1px solid var(--border);z-index:300;display:none;flex-direction:column;font-family:var(--font-ui);font-size:13px}
+#right-panel.open{display:flex}
+#rp-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 4px;flex-shrink:0}
+.rp-tab{background:none;border:none;border-bottom:2px solid transparent;padding:10px 12px;font-family:var(--font-ui);font-size:12px;color:var(--text-tertiary);cursor:pointer;transition:color .15s,border-color .15s;white-space:nowrap}
+.rp-tab:hover{color:var(--text-secondary)}
+.rp-tab.active{color:var(--text-primary);border-bottom-color:var(--accent)}
+#rp-body{flex:1;overflow-y:auto;padding:16px}
+.rp-section{display:none}
+.rp-section.active{display:block}
 
 /* ── OUTLINE (in file browser) ── */
 #fb-outline{border-top:1px solid var(--border);padding:8px 0;flex-shrink:0;max-height:200px;overflow-y:auto}
@@ -533,68 +519,31 @@ body.split-view #split-prev{display:block}
 </head>
 <body data-mode="writer">
 
-<!-- App menu (behind writer) -->
-<div id="app-menu">
-  <div id="app-menu-head"><span>thorn</span><button onclick="closeAppMenu()" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:16px;padding:4px">✕</button></div>
-  <div class="am-section">
-    <div class="am-item" onclick="amAction('new')">New Document <span class="am-key">⌘N</span></div>
-    <div class="am-item" onclick="amAction('open')">Quick Switcher <span class="am-key">⌘P</span></div>
-    <div class="am-item" onclick="amAction('daily')">Daily Note</div>
-  </div>
-  <div class="am-section">
-    <div class="am-item" onclick="amAction('save')">Save <span class="am-key">⌘S</span></div>
-    <div class="am-item" onclick="amAction('commit')">Commit to GitHub <span class="am-key">⌘⇧S</span></div>
-    <div class="am-item" onclick="amAction('pull')">Pull from GitHub <span class="am-key">⌘⇧P</span></div>
-    <div class="am-item" onclick="amAction('cache')">Cache Repo Offline</div>
-    <div class="am-item" onclick="amAction('pushpending')">Push Offline Changes</div>
-    <div class="am-item" onclick="amAction('export')">Export <span class="am-key">⌘E</span></div>
-  </div>
-  <div class="am-section">
-    <div class="am-item" onclick="amAction('focus')">Focus Mode <span class="am-key">⌘F</span></div>
-    <div class="am-item" onclick="amAction('split')">Split View <span class="am-key">⌘\</span></div>
-    <div class="am-item" onclick="amAction('preview')">Preview</div>
-    <div class="am-item" onclick="amAction('find')">Find & Replace <span class="am-key">⌘⇧F</span></div>
-  </div>
-  <div class="am-section">
-    <div class="am-item" onclick="amAction('files')">File Browser <span class="am-key">⌘⇧B</span></div>
-    <div class="am-item" onclick="amAction('annotations')">Annotations <span class="am-key">⌘⇧I</span></div>
-    <div class="am-item" onclick="amAction('stats')">Document Stats <span class="am-key">⌘I</span></div>
-    <div class="am-item" onclick="amAction('graph')">Graph View</div>
-  </div>
-  <div class="am-section">
-    <div class="am-item" onclick="amAction('theme')">Theme</div>
-    <div class="am-item" onclick="amAction('settings')">Settings <span class="am-key">⌘,</span></div>
-  </div>
-</div>
-
 <!-- Topbar: OUTSIDE writer-surface, fixed at top -->
 <div id="topbar">
   <div class="tb-left">
     <button class="tb-btn" id="tb-files" onclick="toggleFB()" title="Files (⌘⇧B)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h5l1.5 1.5H14v9H2V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
     </button>
-    <button class="tb-btn" id="tb-tabs" onclick="toggleTabBar()" title="Tabs">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="5" height="9" rx="1" stroke="currentColor" stroke-width="1.1"/><rect x="7.5" y="3.5" width="3.5" height="9" rx="1" stroke="currentColor" stroke-width="1.1" opacity=".5"/><rect x="12" y="3.5" width="2.5" height="9" rx="1" stroke="currentColor" stroke-width="1.1" opacity=".3"/></svg>
-    </button>
+    <div id="tb-tabs"></div>
+    <button class="tb-tab-new" onclick="newDoc()" title="New tab">+</button>
+  </div>
+  <div class="tb-center">
+    <span class="tb-dot" id="tb-dot"></span>
     <span class="tb-title" id="tb-title">Untitled</span>
   </div>
   <div class="tb-right">
-    <span class="tb-status"><span class="tb-dot" id="tb-dot"></span><span id="tb-status-text">Saved</span></span>
     <button class="tb-btn" onclick="openCmd()" title="Commands (⌘K)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     </button>
-    <button class="tb-btn" id="tb-annot" onclick="toggleAP()" title="Annotations (⌘⇧I)">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v8H6L3 14V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="tb-btn" onclick="toggleAppMenu()" title="Menu">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4.5h10M3 8h10M3 11.5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <button class="tb-btn" id="tb-gear" onclick="toggleRightPanel()" title="Tools">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 2v2m0 8v2M2 8h2m8 0h2m-1.5-4.5L11 5m-6 6-1.5 1.5m0-9L5 5m6 6 1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     </button>
   </div>
 </div>
 
 <!-- Writer surface: slides to reveal panels behind it -->
 <div id="writer-surface">
-<div id="tab-bar" style="display:none"></div>
 <div id="gh-banner"></div>
 <div id="col">
   <div id="ov" aria-hidden="true"></div>
@@ -779,155 +728,137 @@ body.split-view #split-prev{display:block}
 
 </div><!-- /writer-surface -->
 
-<!-- Top hover menu (hidden) -->
-<div id="top-menu-trigger"></div>
-<div id="top-menu">
-  <button onclick="ftbWrap('**','**');event.stopPropagation()" title="Bold (⌘B)" style="font-weight:700">B</button>
-  <button onclick="ftbWrap('*','*');event.stopPropagation()" title="Italic (⌘I)" style="font-style:italic">I</button>
-  <button onclick="ftbWrap('~~','~~');event.stopPropagation()" title="Strikethrough" style="text-decoration:line-through">S</button>
-  <button onclick="ftbWrap('\`','\`');event.stopPropagation()" title="Inline code" style="font-family:monospace">c</button>
-  <div class="tm-sep"></div>
-  <button onclick="ftbHead(1);event.stopPropagation()" title="Heading 1" style="font-weight:700;font-size:11px">H1</button>
-  <button onclick="ftbHead(2);event.stopPropagation()" title="Heading 2" style="font-weight:700;font-size:10px">H2</button>
-  <button onclick="ftbLine('> ');event.stopPropagation()" title="Blockquote" style="font-size:15px;line-height:1">"</button>
-  <button onclick="ftbLine('- ');event.stopPropagation()" title="List item" style="font-size:17px;line-height:1">·</button>
-  <button onclick="ftbLink();event.stopPropagation()" title="Link">⌘K</button>
-  <div class="tm-sep"></div>
-  <button onclick="toggleFocus();event.stopPropagation()" title="Focus mode">Focus</button>
-  <button onclick="toggleFullscreen();event.stopPropagation()" title="Fullscreen">⤢</button>
-  <div class="tm-sep"></div>
-  <button onclick="openThemePicker();event.stopPropagation()" title="Theme">◐</button>
-  <button onclick="openSettings('writing');event.stopPropagation()" title="Settings">⚙</button>
-</div>
-<div id="mo-settings">
-  <div id="sp-header">
-    <div id="sp-brand">
-      <img class="sp-logo-icon" src="/assets/logo-icon.jpg" alt="" />
-      <img class="sp-logo-type" src="/assets/logo-wordmark.jpg" alt="thorn" />
+<!-- Unified right panel -->
+<div id="right-panel">
+  <div id="rp-tabs">
+    <button class="rp-tab active" data-rp="annotations" onclick="switchRP(this,'annotations')">Annotations</button>
+    <button class="rp-tab" data-rp="settings" onclick="switchRP(this,'settings')">Settings</button>
+    <button class="rp-tab" data-rp="stats" onclick="switchRP(this,'stats')">Stats</button>
+    <button class="rp-tab" data-rp="tools" onclick="switchRP(this,'tools')">Tools</button>
+  </div>
+  <div id="rp-body">
+    <!-- Annotations section -->
+    <div class="rp-section active" id="rp-annotations">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h3 style="margin:0">Annotations</h3>
+      </div>
+      <div id="ap-nav" style="display:none;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--fg3)">
+        <button onclick="annNav(-1)" style="background:none;border:1px solid var(--fg3);border-radius:4px;color:var(--fg2);cursor:pointer;padding:3px 10px;font-family:var(--font);font-size:13px">&larr;</button>
+        <span id="ap-counter" style="font-size:11px;color:var(--fg2);flex:1;text-align:center"></span>
+        <button onclick="annNav(1)" style="background:none;border:1px solid var(--fg3);border-radius:4px;color:var(--fg2);cursor:pointer;padding:3px 10px;font-family:var(--font);font-size:13px">&rarr;</button>
+      </div>
+      <div id="ap-list"></div>
     </div>
-    <button id="sp-close" onclick="closeSettings()">✕</button>
-  </div>
-  <div id="sp-tabs">
-      <button class="stab" data-tab="writing"  onclick="switchStab(this,'writing')">Writing</button>
-      <button class="stab" data-tab="github"   onclick="switchStab(this,'github')">GitHub</button>
-      <button class="stab" data-tab="theme"    onclick="switchStab(this,'theme')">Theme</button>
-      <button class="stab" data-tab="typo"     onclick="switchStab(this,'typo')">Typography</button>
-      <button class="stab" data-tab="ai"    onclick="switchStab(this,'ai')">AI Agent</button>
-  </div>
-  <div id="sp-body">
 
-      <!-- Writing -->
-      <div class="spanel" id="sp-writing" style="display:none">
-        <label>Daily word goal <span style="color:var(--fg3);font-weight:400">(0 = off)</span></label>
-        <input class="fi" id="s-wg" type="number" min="0" placeholder="500">
-        <label>Auto-save every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
-        <input class="fi" id="s-as-mins" type="number" min="0" max="60" placeholder="5">
-        <label>Auto-commit every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
-        <input class="fi" id="s-ac-mins" type="number" min="0" max="120" placeholder="15">
-        <label>Spellcheck language</label>
-        <select class="fi" id="s-lang-sel" onchange="setLangFromSel()">
-          <option value="0">English</option>
-          <option value="1">German</option>
-          <option value="2">English + German</option>
-        </select>
+    <!-- Settings section -->
+    <div class="rp-section" id="rp-settings">
+      <div id="sp-tabs">
+        <button class="stab" data-tab="writing" onclick="switchStab(this,'writing')">Writing</button>
+        <button class="stab" data-tab="github" onclick="switchStab(this,'github')">GitHub</button>
+        <button class="stab" data-tab="theme" onclick="switchStab(this,'theme')">Theme</button>
+        <button class="stab" data-tab="typo" onclick="switchStab(this,'typo')">Typography</button>
+        <button class="stab" data-tab="ai" onclick="switchStab(this,'ai')">AI Agent</button>
       </div>
-
-      <!-- GitHub -->
-      <div class="spanel" id="sp-github" style="display:none">
-        <div id="gh-step-tok">
-          <label>Personal Access Token</label>
-          <div style="display:flex;gap:8px">
-            <input class="fi" id="s-gh-tok" type="password" placeholder="ghp_… (needs repo scope)" style="margin-bottom:0;flex:1">
-            <button class="btn" style="flex-shrink:0" onclick="ghConnect()">Connect</button>
-          </div>
-          <p style="font-size:11px;color:var(--fg3);margin-top:6px;margin-bottom:0">Create at <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="color:var(--accent)">github.com/settings/tokens/new</a> — tick <strong>repo</strong>.</p>
+      <div id="sp-body">
+        <!-- Writing -->
+        <div class="spanel" id="sp-writing" style="display:none">
+          <label>Daily word goal <span style="color:var(--fg3);font-weight:400">(0 = off)</span></label>
+          <input class="fi" id="s-wg" type="number" min="0" placeholder="500">
+          <label>Auto-save every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
+          <input class="fi" id="s-as-mins" type="number" min="0" max="60" placeholder="5">
+          <label>Auto-commit every <span style="color:var(--fg3);font-weight:400">(minutes, 0 = off)</span></label>
+          <input class="fi" id="s-ac-mins" type="number" min="0" max="120" placeholder="15">
+          <label>Spellcheck language</label>
+          <select class="fi" id="s-lang-sel" onchange="setLangFromSel()">
+            <option value="0">English</option>
+            <option value="1">German</option>
+            <option value="2">English + German</option>
+          </select>
         </div>
-        <div id="gh-step-repo" style="display:none;margin-top:14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-            <span id="gh-user-badge" style="font-size:12px;color:#4ade80">✓ Connected</span>
-            <button onclick="ghDisconnect()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:11px;padding:0;font-family:var(--font)">disconnect</button>
+        <!-- GitHub -->
+        <div class="spanel" id="sp-github" style="display:none">
+          <div id="gh-step-tok">
+            <label>Personal Access Token</label>
+            <div style="display:flex;gap:8px">
+              <input class="fi" id="s-gh-tok" type="password" placeholder="ghp_... (needs repo scope)" style="margin-bottom:0;flex:1">
+              <button class="btn" style="flex-shrink:0" onclick="ghConnect()">Connect</button>
+            </div>
+            <p style="font-size:11px;color:var(--fg3);margin-top:6px;margin-bottom:0">Create at <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="color:var(--accent)">github.com/settings/tokens/new</a> -- tick <strong>repo</strong>.</p>
           </div>
-          <label>Repository</label>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select class="fi" id="s-gh-repo-sel" style="margin-bottom:0;flex:1" onchange="ghPickRepo()"><option value="">— choose —</option></select>
-            <button class="btn btn-g" style="flex-shrink:0;font-size:12px" onclick="ghLoadRepos()" title="Refresh">↻</button>
+          <div id="gh-step-repo" style="display:none;margin-top:14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span id="gh-user-badge" style="font-size:12px;color:#4ade80">&#10003; Connected</span>
+              <button onclick="ghDisconnect()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:11px;padding:0;font-family:var(--font)">disconnect</button>
+            </div>
+            <label>Repository</label>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <select class="fi" id="s-gh-repo-sel" style="margin-bottom:0;flex:1" onchange="ghPickRepo()"><option value="">-- choose --</option></select>
+              <button class="btn btn-g" style="flex-shrink:0;font-size:12px" onclick="ghLoadRepos()" title="Refresh">&#8635;</button>
+            </div>
+            <div id="gh-step-branch" style="display:none">
+              <label>Branch</label>
+              <select class="fi" id="s-gh-branch-sel" style="margin-bottom:8px" onchange="ghPickBranch()"><option value="">-- choose --</option></select>
+            </div>
+            <div id="gh-step-file" style="display:none">
+              <label>File</label>
+              <select class="fi" id="s-gh-file-sel" style="margin-bottom:6px" onchange="ghPickFile()">
+                <option value="">-- choose --</option>
+                <option value="__new__">+ New file...</option>
+              </select>
+              <input class="fi" id="s-gh-path" placeholder="e.g. writing/chapter-1.md" style="display:none">
+              <div id="gh-summary" style="display:none;background:rgba(128,128,128,.07);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--fg2);line-height:1.6;margin-top:4px"></div>
+            </div>
+            <input type="hidden" id="s-gh-repo">
+            <input type="hidden" id="s-gh-branch">
           </div>
-          <div id="gh-step-branch" style="display:none">
-            <label>Branch</label>
-            <select class="fi" id="s-gh-branch-sel" style="margin-bottom:8px" onchange="ghPickBranch()"><option value="">— choose —</option></select>
-          </div>
-          <div id="gh-step-file" style="display:none">
-            <label>File</label>
-            <select class="fi" id="s-gh-file-sel" style="margin-bottom:6px" onchange="ghPickFile()">
-              <option value="">— choose —</option>
-              <option value="__new__">+ New file…</option>
-            </select>
-            <input class="fi" id="s-gh-path" placeholder="e.g. writing/chapter-1.md" style="display:none">
-            <div id="gh-summary" style="display:none;background:rgba(128,128,128,.07);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--fg2);line-height:1.6;margin-top:4px"></div>
-          </div>
-          <input type="hidden" id="s-gh-repo">
-          <input type="hidden" id="s-gh-branch">
         </div>
-      </div>
-
-      <!-- Theme -->
-      <div class="spanel" id="sp-theme" style="display:none">
-        <div class="th-grid" id="th-grid-s" style="margin-bottom:0"></div>
-      </div>
-
-      <!-- Typography -->
-      <div class="spanel" id="sp-typo" style="display:none">
-        <label style="display:flex;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:8px">
-          Font size <span id="s-sz-val" style="font-weight:400;color:var(--fg2)">21px</span>
-        </label>
-        <!-- 6 steps: 14, 17, 19, 21, 24, 28 -->
-        <input type="range" id="s-sz" min="0" max="5" step="1" value="3" oninput="liveTypo()" style="width:100%;margin-bottom:6px;accent-color:var(--accent)">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--fg3);margin-bottom:20px"><span>Small</span><span>Default</span><span>Large</span></div>
-        <label style="display:flex;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:8px">
-          Line width <span id="s-lw-val" style="font-weight:400;color:var(--fg2)">680px</span>
-        </label>
-        <!-- 6 steps: 520, 600, 680, 760, 860, 960 -->
-        <input type="range" id="s-lw" min="0" max="5" step="1" value="2" oninput="liveTypo()" style="width:100%;margin-bottom:6px;accent-color:var(--accent)">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--fg3)"><span>Narrow</span><span>Default</span><span>Wide</span></div>
-      </div>
-
-      <!-- AI Agent -->
-      <div class="spanel" id="sp-ai" style="display:none">
-        <label>API Endpoint</label>
-        <input class="fi" id="s-ai-endpoint" placeholder="https://api.openai.com/v1/chat/completions">
-        <label>API Key</label>
-        <input class="fi" id="s-ai-key" type="password" placeholder="sk-...">
+        <!-- Theme -->
+        <div class="spanel" id="sp-theme" style="display:none">
+          <div class="th-grid" id="th-grid-s" style="margin-bottom:0"></div>
+        </div>
+        <!-- Typography -->
+        <div class="spanel" id="sp-typo" style="display:none">
+          <label style="display:flex;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:8px">
+            Font size <span id="s-sz-val" style="font-weight:400;color:var(--fg2)">21px</span>
+          </label>
+          <input type="range" id="s-sz" min="0" max="5" step="1" value="3" oninput="liveTypo()" style="width:100%;margin-bottom:6px;accent-color:var(--accent)">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--fg3);margin-bottom:20px"><span>Small</span><span>Default</span><span>Large</span></div>
+          <label style="display:flex;justify-content:space-between;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:8px">
+            Line width <span id="s-lw-val" style="font-weight:400;color:var(--fg2)">680px</span>
+          </label>
+          <input type="range" id="s-lw" min="0" max="5" step="1" value="2" oninput="liveTypo()" style="width:100%;margin-bottom:6px;accent-color:var(--accent)">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--fg3)"><span>Narrow</span><span>Default</span><span>Wide</span></div>
+        </div>
+        <!-- AI Agent -->
+        <div class="spanel" id="sp-ai" style="display:none">
+          <label>API Endpoint</label>
+          <input class="fi" id="s-ai-endpoint" placeholder="https://api.openai.com/v1/chat/completions">
+          <label>API Key</label>
+          <input class="fi" id="s-ai-key" type="password" placeholder="sk-...">
         <label>Model</label>
         <input class="fi" id="s-ai-model" placeholder="gpt-4o">
         <label>System Prompt</label>
         <textarea class="fi" id="s-ai-prompt" rows="4" placeholder="You are a sharp literary editor. Give brief, specific feedback on clarity, rhythm, and precision."></textarea>
         <p style="font-size:11px;color:var(--fg3);margin-top:-6px">Works with OpenAI, Anthropic, Ollama (localhost:11434), Groq, OpenRouter, or any OpenAI-compatible endpoint. Your key is stored locally and never leaves your machine.</p>
+        </div>
+      </div><!-- /sp-body -->
+      <div id="sp-foot">
+        <button class="btn" onclick="saveSettings()">Save</button>
+        <button class="btn btn-g" onclick="closeSettings()">Close</button>
       </div>
+    </div><!-- /rp-settings -->
 
-  </div><!-- /sp-body -->
-  <div id="sp-foot">
-    <button class="btn" onclick="saveSettings()">Save</button>
-    <button class="btn btn-g" onclick="closeSettings()">Close</button>
-  </div>
-</div>
+    <!-- Stats section -->
+    <div class="rp-section" id="rp-stats">
+      <div id="rp-stats-body"></div>
+    </div>
 
-<!-- Annotations hover trigger -->
-<div id="ap-trigger" onmouseenter="hoverOpenAP()"></div>
-
-<!-- Annotations Panel -->
-<div id="ap">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-    <h3 style="margin:0">Annotations</h3>
-    <button onclick="toggleAP()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:16px;padding:2px 8px;border-radius:4px">✕</button>
-  </div>
-  <!-- nav bar -->
-  <div id="ap-nav" style="display:none;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--fg3)">
-    <button onclick="annNav(-1)" style="background:none;border:1px solid var(--fg3);border-radius:4px;color:var(--fg2);cursor:pointer;padding:3px 10px;font-family:var(--font);font-size:13px">←</button>
-    <span id="ap-counter" style="font-size:11px;color:var(--fg2);flex:1;text-align:center"></span>
-    <button onclick="annNav(1)"  style="background:none;border:1px solid var(--fg3);border-radius:4px;color:var(--fg2);cursor:pointer;padding:3px 10px;font-family:var(--font);font-size:13px">→</button>
-  </div>
-  <div id="ap-list"></div>
-</div><!-- /ap -->
+    <!-- Tools section -->
+    <div class="rp-section" id="rp-tools">
+      <div id="rp-tools-list"></div>
+    </div>
+  </div><!-- /rp-body -->
+</div><!-- /right-panel -->
 
 <!-- File browser (behind writer) -->
 <div id="fb">
@@ -944,14 +875,6 @@ body.split-view #split-prev{display:block}
   <div id="fb-outline">
     <div id="fb-outline-head">Outline</div>
     <div id="fb-outline-list"></div>
-  </div>
-</div>
-
-<!-- Quick switcher -->
-<div class="mo" id="qs-mo" onclick="moOut(event,'qs-mo')">
-  <div class="mbox" style="padding:0;overflow:hidden;width:480px">
-    <input id="qs-in" placeholder="Open a document..." oninput="filterQS()" onkeydown="qsKey(event)" autocomplete="off">
-    <div id="qs-list" style="max-height:340px;overflow-y:auto;padding:4px"></div>
   </div>
 </div>
 
@@ -980,24 +903,6 @@ body.split-view #split-prev{display:block}
     <button class="foot-btn" id="wf-lang" onclick="cycleLang()">EN</button>
     <button class="foot-btn" onclick="toggleFullscreen()">⤢</button>
   </div>
-</div>
-
-<!-- Chapter navigator -->
-<div id="cn">
-  <div id="cn-head">
-    <span>Chapters</span>
-    <button onclick="toggleCN()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px">✕</button>
-  </div>
-  <div id="cn-list"></div>
-</div>
-
-<!-- Stats panel -->
-<div id="stats-panel">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-    <h3 style="margin:0">Document Stats</h3>
-    <button onclick="toggleStats()" style="background:none;border:none;color:var(--fg3);cursor:pointer;font-size:16px;padding:2px 8px;border-radius:4px">✕</button>
-  </div>
-  <div id="stats-body"></div>
 </div>
 
 <!-- New file modal -->
@@ -1111,57 +1016,27 @@ const ov=document.getElementById('ov');
 
 /* ── BOOT ── */
 
-/* ── TABS ── */
+/* ── TABS (inline in topbar) ── */
 function tabsEnabled(){return S.docs&&S.docs.length>0}
 function renderTabs(){
-  const bar=document.getElementById('tab-bar');
-  if(!bar)return;
-  if(S.docs.length===0){bar.style.display='none';bar.classList.remove('tab-visible');return;}
-  bar.style.display='flex';
-  // Tabs are the docs in order — we show all open tabs (all docs for now)
+  const el=document.getElementById('tb-tabs');
+  if(!el)return;
   let html='';
   S.docs.forEach(doc=>{
     const active=doc.id===S.cur?'active':'';
     const name=doc.title||'Untitled';
     const isDirty=(S.cur===doc.id&&S.dirty)?'dirty':'';
-    html+=`<div class="t-tab ${active}" data-id="${doc.id}" onclick="tabClick('${doc.id}')" title="${name}">
+    html+=`<div class="tb-tab ${active}" onclick="tabClick('${doc.id}')" title="${name}">
       <span class="t-dot ${isDirty}"></span>
       <span class="t-name">${name}</span>
-      <span class="t-close" onclick="tabClose('${doc.id}',event)">×</span>
+      <span class="t-close" onclick="tabClose('${doc.id}',event)">&times;</span>
     </div>`;
   });
-  html+='<div id="tab-new" onclick="newDoc()" title="New document (⌘N)">+</div>';
-  bar.innerHTML=html;
+  el.innerHTML=html;
   // Scroll active tab into view
-  const active=bar.querySelector('.t-tab.active');
+  const active=el.querySelector('.tb-tab.active');
   if(active)active.scrollIntoView({block:'nearest',inline:'nearest'});
 }
-// Tab bar: toggled by button, no hover logic
-let tabsVisible=false;
-function toggleTabBar(){
-  tabsVisible=!tabsVisible;
-  const bar=document.getElementById('tab-bar');
-  const btn=document.getElementById('tb-tabs');
-  if(tabsVisible){
-    bar.classList.add('tab-visible');
-    if(btn) btn.classList.add('active');
-  } else {
-    bar.classList.remove('tab-visible');
-    if(btn) btn.classList.remove('active');
-  }
-  // Shift topbar + all panels below tabs
-  const top=tabsVisible?'80px':'44px'; // 36 tabs + 44 topbar, or just 44 topbar
-  const h=tabsVisible?'calc(100vh - 80px)':'calc(100vh - 44px)';
-  document.getElementById('topbar').style.top=tabsVisible?'36px':'0';
-  document.querySelectorAll('#fb,#ap,#app-menu,#mo-settings,#cn,#stats-panel').forEach(function(el){
-    el.style.top=top;
-    el.style.height=h;
-  });
-  var menu=document.getElementById('top-menu');
-  if(menu&&menu.classList.contains('open')) menu.style.top=tabsVisible?'80px':'44px';
-}
-window._showTabs=function(){};
-window._hideTabs=function(){};
 function tabClick(id){
   if(id===S.cur)return;
   if(S.dirty)saveDoc(true);
@@ -1577,7 +1452,7 @@ ta.addEventListener('keydown',e=>{
   if(mod&&e.key==='s'&&!e.shiftKey){e.preventDefault();saveDoc();return;}
   if(mod&&e.shiftKey&&e.key==='S'){e.preventDefault();syncToGH();return;}
   if(mod&&e.shiftKey&&e.key==='P'){e.preventDefault();pullFromGH();return;}
-  if(mod&&e.key==='p'&&!e.shiftKey){e.preventDefault();openQS();return;}
+  if(mod&&e.key==='p'&&!e.shiftKey){e.preventDefault();openCmd();return;}
   if(mod&&e.key==='f'){e.preventDefault();toggleFocus();return;}
   if(mod&&e.key==='n'){e.preventDefault();newDoc();return;}
   if(mod&&e.key==='o'){e.preventDefault();openDocs();return;}
@@ -1611,21 +1486,18 @@ document.addEventListener('keydown',e=>{
     closeAllMo();
     // Close all panels and snap writer back
     const ws=document.getElementById('writer-surface');
+    if(rpOpen){
+      toggleRightPanel();
+      return;
+    }
     if(ws&&ws.classList.contains('shifted-left')){
-      const ap=document.getElementById('ap');
-      const ms=document.getElementById('mo-settings');
-      const am=document.getElementById('app-menu');
-      if(ap&&ap.classList.contains('open'))toggleAP();
-      if(ms&&ms.classList.contains('open'))closeSettings();
-      if(am&&am.classList.contains('open'))closeAppMenu();
       ws.classList.remove('shifted-left');
       return;
     }
     if(ws&&ws.classList.contains('shifted-right')){closeFB();return;}
   }
-  // Annotation keyboard nav when panel is open
-  const ap=document.getElementById('ap');
-  if(ap.classList.contains('open')&&document.activeElement!==ta){
+  // Annotation keyboard nav when right panel annotations tab is open
+  if(rpOpen && document.querySelector('#rp-annotations.active')&&document.activeElement!==ta){
     if(e.key==='ArrowLeft'){e.preventDefault();annNav(-1);}
     else if(e.key==='ArrowRight'){e.preventDefault();annNav(1);}
   }
@@ -1664,9 +1536,7 @@ function dot(state){
   el.className=''; el.classList.add(state);
   // Sync topbar dot
   const td=document.getElementById('tb-dot');
-  const ts=document.getElementById('tb-status-text');
   if(td){td.className='tb-dot';if(state==='dirty')td.classList.add('dirty');if(state==='err')td.classList.add('err');}
-  if(ts)ts.textContent=state==='ok'?'Saved':state==='dirty'?'Unsaved':'Error';
 }
 
 /* ── TOAST ── */
@@ -1859,7 +1729,7 @@ function openSettings(tab){
   // GitHub connected state
   if(S.cfg.ghTok){
     document.getElementById('gh-step-repo').style.display='block';
-    document.getElementById('gh-user-badge').textContent='✓ Connected';
+    document.getElementById('gh-user-badge').textContent='\u2713 Connected';
     ghLoadRepos(S.cfg.ghTok);
   }
   // Sliders — use step indices
@@ -1869,26 +1739,22 @@ function openSettings(tab){
   document.getElementById('s-lw').value=curLwIdx;
   document.getElementById('s-sz-val').textContent=(SZ_STEPS[curSzIdx]||21)+'px';
   document.getElementById('s-lw-val').textContent=(LW_STEPS[curLwIdx]||680)+'px';
-  // Activate tab — scoped to settings modal
-  const modal=document.getElementById('mo-settings');
-  modal.querySelectorAll('.spanel').forEach(p=>p.style.display='none');
-  modal.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  // Open right panel on settings tab
+  if(!rpOpen) toggleRightPanel('settings');
+  else switchRP(null,'settings');
+  // Activate inner settings tab
+  const settingsSection=document.getElementById('rp-settings');
+  settingsSection.querySelectorAll('.spanel').forEach(p=>p.style.display='none');
+  settingsSection.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
   const targetTab=tab||'writing';
-  const tabEl=modal.querySelector(`[data-tab="${targetTab}"]`);
+  const tabEl=settingsSection.querySelector(`[data-tab="${targetTab}"]`);
   const panel=document.getElementById('sp-'+targetTab);
   if(tabEl) tabEl.classList.add('active');
   if(panel) panel.style.display='block';
-  document.getElementById('mo-settings').classList.add('open');
-  const ws=document.getElementById('writer-surface');
-  if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
-  if(fbOpen)closeFB();
-  closeAppMenu();
   if(targetTab==='theme') requestAnimationFrame(()=>renderThemeGrid('th-grid-s'));
 }
 function closeSettings(){
-  document.getElementById('mo-settings').classList.remove('open');
-  const ws=document.getElementById('writer-surface');
-  if(ws)ws.classList.remove('shifted-left');
+  if(rpOpen) toggleRightPanel(); // close right panel
 }
 function commitNow(){closeMo('mo-ann');syncToGH(false);}
 
@@ -2074,22 +1940,12 @@ function annJumpTo(id){
   toggleAP();
 }
 function toggleAP(){
-  const ap=document.getElementById('ap');
-  const isOpen=ap.classList.toggle('open');
-  const ws=document.getElementById('writer-surface');
-  const tba=document.getElementById('tb-annot');
-  if(isOpen){
-    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
-    if(fbOpen)closeFB();
-    if(tba)tba.classList.add('active');
-    renderAnnList();
+  if(rpOpen && document.querySelector('#rp-annotations.active')){
+    toggleRightPanel(); // close
   } else {
-    if(ws)ws.classList.remove('shifted-left');
-    if(tba)tba.classList.remove('active');
+    if(!rpOpen) toggleRightPanel('annotations');
+    else switchRP(null,'annotations');
   }
-}
-function hoverOpenAP(){
-  // Disabled — annotations only open via menu/button
 }
 // Close panels: click on shifted writer surface snaps it back
 document.addEventListener('click',e=>{
@@ -2097,12 +1953,7 @@ document.addEventListener('click',e=>{
   if(!ws)return;
   // Click on shifted writer = close whatever panel is open, snap back
   if(ws.classList.contains('shifted-left')&&ws.contains(e.target)){
-    const ap=document.getElementById('ap');
-    const ms=document.getElementById('mo-settings');
-    const am=document.getElementById('app-menu');
-    if(ap.classList.contains('open'))toggleAP();
-    if(ms.classList.contains('open'))closeSettings();
-    if(am.classList.contains('open'))closeAppMenu();
+    if(rpOpen) toggleRightPanel();
     ws.classList.remove('shifted-left');
     return;
   }
@@ -2269,11 +2120,8 @@ function openFB(){
   document.getElementById('fb').classList.add('open');
   const ws=document.getElementById('writer-surface');
   if(ws){ws.classList.add('shifted-right');ws.classList.remove('shifted-left');}
-  // Close any right-side panels
-  closeAppMenu();
-  const ap=document.getElementById('ap');
-  if(ap.classList.contains('open')){ap.classList.remove('open');const tb=document.getElementById('tb-annot');if(tb)tb.classList.remove('active');}
-  document.getElementById('mo-settings').classList.remove('open');
+  // Close right panel if open
+  if(rpOpen) toggleRightPanel();
   const tbf=document.getElementById('tb-files');if(tbf)tbf.classList.add('active');
   fbOpen=true;
   // Also check live settings fields in case user connected but hasn't clicked Save
@@ -2290,8 +2138,7 @@ function toggleFB(){fbOpen?closeFB():openFB();}
 
 // Close sidebar when clicking outside
 document.addEventListener('click',e=>{
-  if(fbOpen && !document.getElementById('fb').contains(e.target) && !document.getElementById('fb-trigger').contains(e.target)) closeFB();
-  if(cnOpen && !document.getElementById('cn').contains(e.target)) toggleCN();
+  if(fbOpen && !document.getElementById('fb').contains(e.target) && !(document.getElementById('tb-files')&&document.getElementById('tb-files').contains(e.target))) closeFB();
 });
 
 async function loadFBTree(){
@@ -2669,26 +2516,11 @@ async function doNewFile(){
   }catch(e){toast('Error: '+e.message);}
 }
 
-/* ── CHAPTER NAVIGATOR ── */
+/* ── CHAPTER NAVIGATOR — removed, outline lives in file browser ── */
 let cnOpen=false;
 function toggleCN(){
-  cnOpen=!cnOpen;
-  const el=document.getElementById('cn');
-  el.classList.toggle('open',cnOpen);
-  if(cnOpen)renderCN();
-}
-function renderCN(){
-  const lines=ta.value.split('\n');
-  const headings=[];
-  let pos=0;
-  lines.forEach((l,i)=>{
-    const m=l.match(/^(#{1,3})\s+(.+)/);
-    if(m)headings.push({level:m[1].length,text:m[2].trim(),line:i,pos});
-    pos+=l.length+1;
-  });
-  const el=document.getElementById('cn-list');
-  if(!headings.length){el.innerHTML='<div style="padding:16px;color:var(--fg3);font-size:12px">No headings found.</div>';return;}
-  el.innerHTML=headings.map(h=>`<div class="cni h${h.level}" onclick="jumpToLine(${h.line})">${esc(h.text)}</div>`).join('');
+  // Chapter navigator removed; open file browser to see outline
+  toggleFB();
 }
 function jumpToLine(line){
   const lines=ta.value.split('\n');
@@ -2700,12 +2532,16 @@ function jumpToLine(line){
   toggleCN();
 }
 
-/* ── STATS PANEL ── */
+/* ── STATS PANEL (now in right panel) ── */
 let statsOpen=false;
 function toggleStats(){
-  statsOpen=!statsOpen;
-  document.getElementById('stats-panel').classList.toggle('open',statsOpen);
-  if(statsOpen) renderStats();
+  if(rpOpen && document.querySelector('#rp-stats.active')){
+    toggleRightPanel(); // close
+  } else {
+    if(!rpOpen) toggleRightPanel('stats');
+    else switchRP(null,'stats');
+  }
+  statsOpen=rpOpen;
 }
 function renderStats(){
   const txt=ta.value;
@@ -2729,7 +2565,7 @@ function renderStats(){
   const uniqueWords=trimmed?new Set(trimmed.toLowerCase().split(/\s+/).map(w=>w.replace(/[^a-zA-ZäöüÄÖÜß]/g,''))).size:0;
   const lexDensity=words?Math.round(uniqueWords/words*100):0;
 
-  document.getElementById('stats-body').innerHTML=`
+  document.getElementById('rp-stats-body').innerHTML=`
     <div class="stat-section">Length</div>
     <div class="stat-row"><span class="stat-label">Words</span><span class="stat-val">${words.toLocaleString()}</span></div>
     <div class="stat-row"><span class="stat-label">Characters</span><span class="stat-val">${chars.toLocaleString()}</span></div>
@@ -2754,9 +2590,9 @@ function renderStats(){
 
 /* ── SETTINGS TABS ── */
 function switchStab(el,tab){
-  const modal=document.getElementById('mo-settings');
-  modal.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
-  modal.querySelectorAll('.spanel').forEach(p=>p.style.display='none');
+  const section=document.getElementById('rp-settings');
+  section.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  section.querySelectorAll('.spanel').forEach(p=>p.style.display='none');
   el.classList.add('active');
   const panel=document.getElementById('sp-'+tab);
   if(panel) panel.style.display='block';
@@ -3391,81 +3227,63 @@ obDots.forEach((d, i) => d.addEventListener('click', () => obGoto(i)));
 // Show on first run
 if (!localStorage.getItem('thorn_onboarded')) obShow();
 
-/* formatting toolbar — show on topbar hover, follows topbar position */
-(function(){
-  var topbar=document.getElementById('topbar');
-  var menu=document.getElementById('top-menu');
-  var leaveTimer=null;
-  function show(){
-    clearTimeout(leaveTimer);
-    // Position below wherever topbar currently is
-    var tbTop=parseInt(topbar.style.top)||0;
-    menu.style.top=(tbTop+44)+'px';
-    menu.classList.add('open');
-  }
-  function hide(){leaveTimer=setTimeout(function(){menu.classList.remove('open');},400);}
-  if(topbar){
-    topbar.addEventListener('mouseenter',show);
-    topbar.addEventListener('mouseleave',hide);
-  }
-  menu.addEventListener('mouseenter',function(){clearTimeout(leaveTimer);});
-  menu.addEventListener('mouseleave',hide);
-})();
-/* click outside to close settings */
-
-/* ── APP MENU ── */
-let appMenuOpen=false;
-function toggleAppMenu(){
-  appMenuOpen=!appMenuOpen;
-  const m=document.getElementById('app-menu');
+/* ── RIGHT PANEL (unified) ── */
+let rpOpen=false;
+function toggleRightPanel(tab){
+  const rp=document.getElementById('right-panel');
   const ws=document.getElementById('writer-surface');
-  if(appMenuOpen){
-    m.classList.add('open');
-    if(ws){ws.classList.add('shifted-left');ws.classList.remove('shifted-right');}
-    if(fbOpen)closeFB();
+  rpOpen=!rpOpen;
+  if(rpOpen){
+    rp.classList.add('open');
+    if(ws) ws.classList.add('shifted-left');
+    if(fbOpen) closeFB();
+    if(tab) switchRP(null,tab);
+    const btn=document.getElementById('tb-gear');
+    if(btn) btn.classList.add('active');
   } else {
-    closeAppMenu();
+    rp.classList.remove('open');
+    if(ws) ws.classList.remove('shifted-left');
+    const btn=document.getElementById('tb-gear');
+    if(btn) btn.classList.remove('active');
+    statsOpen=false;
   }
 }
-function closeAppMenu(){
-  appMenuOpen=false;
-  document.getElementById('app-menu').classList.remove('open');
-  const ws=document.getElementById('writer-surface');
-  // Only remove shifted-left if no other right panel is open
-  const ap=document.getElementById('ap');
-  const ms=document.getElementById('mo-settings');
-  if(ws&&!ap.classList.contains('open')&&!ms.classList.contains('open')){
-    ws.classList.remove('shifted-left');
+function closeRightPanel(){
+  if(rpOpen) toggleRightPanel();
+}
+function switchRP(el,tab){
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.rp-section').forEach(s=>{s.classList.remove('active');s.style.display='none'});
+  if(el) el.classList.add('active');
+  else{const t=document.querySelector('.rp-tab[data-rp="'+tab+'"]');if(t)t.classList.add('active');}
+  const section=document.getElementById('rp-'+tab);
+  if(section){section.classList.add('active');section.style.display='block';}
+  // Render content for active tab
+  if(tab==='annotations') renderAnnList();
+  if(tab==='stats'){statsOpen=true;renderStats();}
+  if(tab==='tools') renderToolsList();
+}
+function renderToolsList(){
+  const el=document.getElementById('rp-tools-list');
+  if(!el)return;
+  const sections={write:'Write',navigate:'Navigate',sync:'Sync',view:'View'};
+  let html='';
+  for(const [key,label] of Object.entries(sections)){
+    html+='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);padding:12px 0 6px">'+label+'</div>';
+    CMDS.filter(c=>c.t===key).forEach((c)=>{
+      const idx=CMDS.indexOf(c);
+      html+='<div class="am-item" onclick="runToolCmd('+idx+')">'+c.l+(c.k?'<span class="am-key">'+c.k+'</span>':'')+'</div>';
+    });
   }
+  el.innerHTML=html;
 }
-function amAction(action){
-  closeAppMenu();
-  const ws=document.getElementById('writer-surface');
-  if(ws)ws.classList.remove('shifted-left');
-  setTimeout(()=>{
-    switch(action){
-      case 'new':newDoc();break;
-      case 'open':openQS();break;
-      case 'daily':openDailyNote();break;
-      case 'save':saveDoc();break;
-      case 'commit':syncToGH();break;
-      case 'pull':pullFromGH();break;
-      case 'cache':cacheFullRepo();break;
-      case 'pushpending':ghPushPending();break;
-      case 'export':openExport();break;
-      case 'focus':toggleFocus();break;
-      case 'split':toggleSplitView();break;
-      case 'preview':togglePreview();break;
-      case 'find':openSearch();break;
-      case 'files':toggleFB();break;
-      case 'annotations':toggleAP();break;
-      case 'stats':toggleStats();break;
-      case 'graph':openGraph();break;
-      case 'theme':openThemePicker();break;
-      case 'settings':openSettings();break;
-    }
-  },50);
+function runToolCmd(idx){
+  closeRightPanel();
+  setTimeout(()=>CMDS[idx].fn(),60);
 }
+// Stubs for removed functions (safety for any lingering references)
+function toggleAppMenu(){toggleRightPanel('tools');}
+function closeAppMenu(){}
 
 /* ── UNIFIED FILE BROWSER RENDER ── */
 function renderFBDocs(){
@@ -3520,44 +3338,8 @@ function ctxAction(action){
   },50);
 }
 
-/* ── QUICK SWITCHER (⌘P) ── */
-let qsIdx=0, qsItems=[];
-function openQS(){
-  document.getElementById('qs-in').value='';
-  qsIdx=0;
-  qsItems=S.docs.slice().sort((a,b)=>b.updated-a.updated);
-  renderQS();
-  openMo('qs-mo');
-  setTimeout(()=>document.getElementById('qs-in').focus(),80);
-}
-function filterQS(){
-  const q=document.getElementById('qs-in').value.toLowerCase().trim();
-  qsItems=S.docs.filter(d=>(d.title||'').toLowerCase().includes(q)||(d.content||'').toLowerCase().includes(q)).sort((a,b)=>b.updated-a.updated);
-  qsIdx=0;
-  renderQS();
-}
-function renderQS(){
-  const el=document.getElementById('qs-list');
-  if(!qsItems.length){el.innerHTML='<div style="padding:16px;color:var(--text-tertiary);font-size:13px;font-family:var(--font-ui)">No documents found</div>';return;}
-  el.innerHTML=qsItems.slice(0,20).map((d,i)=>{
-    const wc=d.content?d.content.trim().split(/\s+/).length:0;
-    const ago=timeAgo(d.updated);
-    return `<div class="qs-item${i===qsIdx?' sel':''}" onclick="pickQS(${i})"><span class="qs-icon">▪</span><span class="qs-title">${esc(d.title||'Untitled')}</span><span class="qs-meta">${wc}w · ${ago}</span></div>`;
-  }).join('');
-}
-function pickQS(i){
-  const d=qsItems[i];
-  if(!d)return;
-  closeMo('qs-mo');
-  if(S.dirty)saveDoc(true);
-  loadDoc(d.id);
-}
-function qsKey(e){
-  if(e.key==='ArrowDown'){e.preventDefault();qsIdx=Math.min(qsIdx+1,qsItems.length-1);renderQS();}
-  else if(e.key==='ArrowUp'){e.preventDefault();qsIdx=Math.max(qsIdx-1,0);renderQS();}
-  else if(e.key==='Enter'){e.preventDefault();pickQS(qsIdx);}
-  else if(e.key==='Escape'){closeMo('qs-mo');}
-}
+/* ── QUICK SWITCHER — redirects to command palette ── */
+function openQS(){ openCmd(); }
 function timeAgo(ts){
   const s=Math.floor((Date.now()-ts)/1000);
   if(s<60)return 'now';
@@ -3610,11 +3392,11 @@ function syncFooter(){
   if(wfrt)wfrt.textContent=wc>50?Math.ceil(wc/220)+'m read':'';
 }
 
-/* ── KEYBOARD: ⌘P for Quick Switcher ── */
+/* ── KEYBOARD: ⌘P for Quick Switcher (now opens command palette) ── */
 document.addEventListener('keydown',function(e){
   if((e.metaKey||e.ctrlKey)&&e.key==='p'&&!e.shiftKey){
     e.preventDefault();
-    openQS();
+    openCmd();
   }
 });
 
@@ -3764,19 +3546,19 @@ function getBacklinks(){
 function updateBacklinks(){
   clearTimeout(_blDebounce);
   _blDebounce=setTimeout(()=>{
-    // Update backlinks in chapter navigator if open
-    const cnList=document.getElementById('cn-list');
-    if(!cnList)return;
+    // Update backlinks in file browser outline area
+    const olList=document.getElementById('fb-outline');
+    if(!olList)return;
     let existing=document.getElementById('backlinks');
     const bls=getBacklinks();
     if(!bls.length){if(existing)existing.remove();return;}
     if(!existing){
       existing=document.createElement('div');
       existing.id='backlinks';
-      cnList.parentElement.appendChild(existing);
+      olList.appendChild(existing);
     }
     existing.innerHTML=`<h4>${bls.length} Backlink${bls.length!==1?'s':''}</h4>`+
-      bls.map(d=>`<div class="bl-item" onclick="loadDoc('${d.id}');toggleCN()">${esc(d.title||'Untitled')}</div>`).join('');
+      bls.map(d=>`<div class="bl-item" onclick="loadDoc('${d.id}');closeFB()">${esc(d.title||'Untitled')}</div>`).join('');
   },500);
 }
 
